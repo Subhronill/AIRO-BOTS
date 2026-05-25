@@ -11,15 +11,18 @@ const generateTokens = (userId: string, email: string, role: string) => {
   const accessToken = jwt.sign(
     { id: userId, email, role },
     process.env.JWT_SECRET || 'secret',
-    { expiresIn: '15m' }
+    { expiresIn: '15m' }          // short-lived — silently refreshed by interceptor
   );
   const refreshToken = jwt.sign(
     { id: userId },
     process.env.JWT_REFRESH_SECRET || 'refresh_secret',
-    { expiresIn: '7d' }
+    { expiresIn: '30d' }          // 30-day rolling window — keeps users logged in
   );
   return { accessToken, refreshToken };
 };
+
+// Refresh token TTL in ms (must match jwt expiresIn above)
+const REFRESH_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 // Register
 router.post('/register', [
@@ -53,7 +56,7 @@ router.post('/register', [
       data: {
         token: refreshToken,
         userId: user.id,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(Date.now() + REFRESH_TTL_MS),
       },
     });
 
@@ -96,7 +99,7 @@ router.post('/login', [
       data: {
         token: refreshToken,
         userId: user.id,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(Date.now() + REFRESH_TTL_MS),
       },
     });
 
@@ -149,7 +152,7 @@ router.post('/refresh', async (req: Request, res: Response) => {
       data: {
         token: tokens.refreshToken,
         userId: user.id,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        expiresAt: new Date(Date.now() + REFRESH_TTL_MS),
       },
     });
 

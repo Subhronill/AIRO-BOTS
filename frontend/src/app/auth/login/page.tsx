@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -11,8 +11,15 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { login, isLoading } = useAuthStore();
+  const { login, isLoading, isAuthenticated, isInitialized } = useAuthStore();
   const router = useRouter();
+
+  // Redirect already-authenticated users — but only AFTER session check completes
+  useEffect(() => {
+    if (isInitialized && isAuthenticated) {
+      router.replace('/dashboard');
+    }
+  }, [isInitialized, isAuthenticated, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

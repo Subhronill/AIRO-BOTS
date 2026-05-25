@@ -7,46 +7,91 @@ const api = axios.create({
   timeout: 10000,
 });
 
-// Request interceptor to add auth token
+/* ─── Token storage helpers ────────────────────────────────────────────────── */
+export const getAccessToken  = () => (typeof window !== 'undefined' ? localStorage.getItem('accessToken')  : null);
+export const getRefreshToken = () => (typeof window !== 'undefined' ? localStorage.getItem('refreshToken') : null);
+
+export const saveTokens = (accessToken: string, refreshToken: string) => {
+  localStorage.setItem('accessToken',  accessToken);
+  localStorage.setItem('refreshToken', refreshToken);
+};
+
+export const clearTokens = () => {
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+};
+
+/* ─── Forced-logout hook (registered by authStore to avoid circular import) ── */
+type LogoutHandler = () => void;
+let _onForcedLogout: LogoutHandler | null = null;
+export const registerForcedLogoutHandler = (handler: LogoutHandler) => {
+  _onForcedLogout = handler;
+};
+
+/* ─── Request interceptor — attach access token ───────────────────────────── */
 api.interceptors.request.use((config) => {
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  }
+  const token = getAccessToken();
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// Response interceptor for token refresh
+/* ─── Response interceptor — silent token refresh on 401 ──────────────────── */
+let _isRefreshing = false;
+let _refreshQueue: Array<(token: string) => void> = [];
+
+const processQueue = (newToken: string) => {
+  _refreshQueue.forEach(resolve => resolve(newToken));
+  _refreshQueue = [];
+};
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      try {
-        const refreshToken = localStorage.getItem('refreshToken');
-        if (!refreshToken) throw new Error('No refresh token');
-        
-        const { data } = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
-        localStorage.setItem('accessToken', data.accessToken);
-        localStorage.setItem('refreshToken', data.refreshToken);
-        originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
-        return api(originalRequest);
-      } catch {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        window.location.href = '/auth/login';
-      }
+    const original = error.config;
+
+    // Not a 401, or this is already a retry — propagate immediately
+    if (error.response?.status !== 401 || original._retry) {
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
+
+    // Queue concurrent requests while a refresh is in flight
+    if (_isRefreshing) {
+      return new Promise<string>((resolve) => {
+        _refreshQueue.push(resolve);
+      }).then((newToken) => {
+        original.headers.Authorization = `Bearer ${newToken}`;
+        return api(original);
+      });
+    }
+
+    original._retry  = true;
+    _isRefreshing    = true;
+
+    try {
+      const refreshToken = getRefreshToken();
+      if (!refreshToken) throw new Error('No refresh token');
+
+      const { data } = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
+      saveTokens(data.accessToken, data.refreshToken);
+      processQueue(data.accessToken);
+
+      original.headers.Authorization = `Bearer ${data.accessToken}`;
+      return api(original);
+    } catch {
+      // Refresh failed — force logout
+      clearTokens();
+      _onForcedLogout?.();
+      if (typeof window !== 'undefined') window.location.replace('/auth/login');
+      return Promise.reject(error);
+    } finally {
+      _isRefreshing = false;
+    }
   }
 );
 
 export default api;
 
-// Types
+/* ─── Types ────────────────────────────────────────────────────────────────── */
 export interface User {
   id: string;
   email: string;

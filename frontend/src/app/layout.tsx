@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import TransitionWrapper from '../components/layout/TransitionWrapper';
+import AuthProvider from '../components/AuthProvider';
 
 export const metadata: Metadata = {
   title: 'AIRO BOTS — AI & Robotics Academy',
@@ -21,7 +22,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="bg-cyber-black text-slate-200 font-body antialiased">
-        <TransitionWrapper>{children}</TransitionWrapper>
+        <AuthProvider>
+          <TransitionWrapper>{children}</TransitionWrapper>
+        </AuthProvider>
         <Toaster
           position="top-right"
           toastOptions={{
