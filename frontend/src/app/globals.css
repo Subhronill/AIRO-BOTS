@@ -302,3 +302,158 @@
   border-radius: 8px;
   overflow: hidden;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   LIGHT MODE OVERRIDES
+   Activated by data-theme="light" on <html>.
+   These rules are intentionally NOT inside any @layer so they always win over
+   Tailwind's layered utilities (@layer base / components / utilities).
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Base ──────────────────────────────────────────────────────────────────── */
+[data-theme="light"] body {
+  background-color: #f0f4f8;
+  color: #0f172a;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-track { background: #dde6f0; }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: #0ea5e9; }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: #0284c7; }
+
+[data-theme="light"] ::selection {
+  background: rgba(14, 165, 233, 0.25);
+  color: #0f172a;
+}
+
+/* ── Page & section backgrounds ────────────────────────────────────────────── */
+[data-theme="light"] .bg-cyber-black  { background-color: #f0f4f8 !important; }
+[data-theme="light"] .bg-cyber-dark   { background-color: #e8eef6 !important; }
+[data-theme="light"] .bg-cyber-navy   { background-color: #ffffff !important; }
+
+/* Opacity-modified bg utilities */
+[data-theme="light"] .bg-cyber-gray\/50       { background-color: rgba(248, 250, 252, 0.9) !important; }
+[data-theme="light"] .bg-cyber-gray\/30       { background-color: rgba(241, 245, 249, 0.8) !important; }
+[data-theme="light"] .bg-cyber-gray\/20       { background-color: rgba(241, 245, 249, 0.6) !important; }
+[data-theme="light"] .bg-cyber-gray           { background-color: #e2e8f0 !important; }
+[data-theme="light"] .bg-white\/\[0\.025\]    { background-color: rgba(14, 165, 233, 0.04) !important; }
+[data-theme="light"] .bg-white\/\[0\.05\]     { background-color: rgba(14, 165, 233, 0.06) !important; }
+[data-theme="light"] .bg-white\/\[0\.03\]     { background-color: rgba(14, 165, 233, 0.05) !important; }
+
+/* ── Text colours ───────────────────────────────────────────────────────────── */
+[data-theme="light"] .text-white    { color: #0f172a !important; }
+[data-theme="light"] .text-slate-200 { color: #1e293b !important; }
+[data-theme="light"] .text-slate-300 { color: #374151 !important; }
+[data-theme="light"] .text-slate-400 { color: #64748b !important; }
+[data-theme="light"] .text-slate-500 { color: #6b7280 !important; }
+
+/* Restore white text on coloured / gradient containers
+   — covers both "child has text-white" and "element itself has both classes" */
+[data-theme="light"] .bg-cyber-gradient .text-white,
+[data-theme="light"] .bg-cyber-gradient.text-white,
+[data-theme="light"] .cyber-btn-primary .text-white,
+[data-theme="light"] .cyber-btn-primary,
+[data-theme="light"] .cyber-btn-primary * { color: #ffffff !important; }
+
+[data-theme="light"] .xp-badge,
+[data-theme="light"] .xp-badge * { color: #ffffff !important; }
+
+/* Buttons / badges with explicit coloured backgrounds keep white text */
+[data-theme="light"] [class*="bg-cyber-blue"][class*="text-white"],
+[data-theme="light"] [class*="bg-purple"][class*="text-white"],
+[data-theme="light"] [class*="bg-green"][class*="text-white"],
+[data-theme="light"] [class*="bg-red"][class*="text-white"] { color: #ffffff !important; }
+
+/* ── Borders ────────────────────────────────────────────────────────────────── */
+[data-theme="light"] .border-cyber-gray\/50        { border-color: rgba(203, 213, 225, 0.7) !important; }
+[data-theme="light"] .border-cyber-gray-light\/50  { border-color: rgba(203, 213, 225, 0.9) !important; }
+[data-theme="light"] .border-cyber-gray            { border-color: #e2e8f0 !important; }
+[data-theme="light"] .border-white\/\[0\.07\]      { border-color: rgba(0, 0, 0, 0.06) !important; }
+[data-theme="light"] .border-white\/10             { border-color: rgba(0, 0, 0, 0.07) !important; }
+
+/* ── Hover backgrounds ──────────────────────────────────────────────────────── */
+[data-theme="light"] .hover\:bg-cyber-gray\/50:hover { background-color: rgba(14, 165, 233, 0.07) !important; }
+[data-theme="light"] .hover\:bg-cyber-gray\/30:hover { background-color: rgba(14, 165, 233, 0.05) !important; }
+
+/* ── Custom component overrides ─────────────────────────────────────────────── */
+
+/* Cyber card — white frosted card */
+[data-theme="light"] .cyber-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(248,251,255,0.98) 100%) !important;
+  border-color: rgba(203, 213, 225, 0.7) !important;
+  box-shadow: 0 4px 24px rgba(14, 165, 233, 0.06), 0 1px 3px rgba(0,0,0,0.06) !important;
+}
+[data-theme="light"] .cyber-card:hover {
+  border-color: rgba(14, 165, 233, 0.4) !important;
+  box-shadow: 0 8px 32px rgba(14, 165, 233, 0.12), 0 2px 6px rgba(0,0,0,0.06) !important;
+}
+
+/* Glass panel — white/frosted (used by Navbar when scrolled) */
+[data-theme="light"] .glass-panel {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border-color: rgba(14, 165, 233, 0.12) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(14,165,233,0.05) !important;
+}
+
+/* Grid background — lighter grid on pale canvas */
+[data-theme="light"] .grid-bg {
+  background-image:
+    linear-gradient(rgba(14, 165, 233, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(14, 165, 233, 0.05) 1px, transparent 1px) !important;
+}
+
+/* Progress bar track */
+[data-theme="light"] .progress-bar { background: rgba(203, 213, 225, 0.5) !important; }
+
+/* ── Chapter / lesson content ───────────────────────────────────────────────── */
+[data-theme="light"] .chapter-content                { color: #1e293b; }
+[data-theme="light"] .chapter-content > *:first-child { margin-top: 0 !important; }
+[data-theme="light"] .chapter-content h1             { color: #0f172a; }
+[data-theme="light"] .chapter-content h2             { color: #1e293b; border-bottom-color: rgba(0,0,0,0.07); }
+[data-theme="light"] .chapter-content h3,
+[data-theme="light"] .chapter-content h4,
+[data-theme="light"] .chapter-content h5,
+[data-theme="light"] .chapter-content h6             { color: #374151; }
+[data-theme="light"] .chapter-content p,
+[data-theme="light"] .chapter-content li             { color: #1e293b; }
+
+[data-theme="light"] .chapter-content code:not(pre code) {
+  color: #0369a1;
+  background: rgba(14, 165, 233, 0.07);
+  border-color: rgba(14, 165, 233, 0.2);
+}
+
+[data-theme="light"] .chapter-content pre {
+  background: #f1f5f9 !important;
+  border-color: rgba(0, 0, 0, 0.07) !important;
+}
+[data-theme="light"] .chapter-content pre code { color: #374151; background: none; }
+
+[data-theme="light"] .chapter-content blockquote {
+  background: rgba(14, 165, 233, 0.05);
+  color: #475569;
+}
+
+[data-theme="light"] .chapter-content table  { border-color: rgba(0,0,0,0.06); }
+[data-theme="light"] .chapter-content th {
+  background: rgba(0,0,0,0.025);
+  border-bottom-color: rgba(0,0,0,0.08);
+  color: #64748b;
+}
+[data-theme="light"] .chapter-content td {
+  border-bottom-color: rgba(0,0,0,0.04);
+  color: #374151;
+}
+[data-theme="light"] .chapter-content tr:last-child td { border-bottom: none; }
+
+[data-theme="light"] .chapter-content strong { color: #0f172a; }
+[data-theme="light"] .chapter-content em     { color: #475569; }
+[data-theme="light"] .chapter-content a      { color: #0284c7; }
+[data-theme="light"] .chapter-content a:hover { text-decoration: underline; }
+[data-theme="light"] .chapter-content hr     { border-top-color: rgba(0,0,0,0.08); }
+
+/* ── Monaco editor in light mode ────────────────────────────────────────────── */
+[data-theme="light"] .monaco-editor .margin { background: #f1f5f9 !important; }
+
+/* ── Neon glow shadows — softer in light mode ───────────────────────────────── */
+[data-theme="light"] .shadow-neon-blue  { box-shadow: 0 0 16px rgba(14, 165, 233, 0.3) !important; }
+[data-theme="light"] .shadow-neon-purple { box-shadow: 0 0 16px rgba(168, 85, 247, 0.3) !important; }

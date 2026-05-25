@@ -4,10 +4,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '../../store/authStore';
-import { Menu, X, Cpu, ChevronDown, Zap } from 'lucide-react';
+import { useThemeStore } from '../../store/themeStore';
+import { Menu, X, Cpu, ChevronDown, Zap, Sun, Moon } from 'lucide-react';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuthStore();
+  const { theme, toggleTheme } = useThemeStore();
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -87,6 +89,43 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+          </div>
+
+          {/* Theme toggle — desktop */}
+          <div className="hidden md:flex items-center">
+            <motion.button
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.92 }}
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              className="w-9 h-9 rounded-lg flex items-center justify-center border border-cyber-blue/20 hover:border-cyber-blue/50 bg-cyber-blue/5 hover:bg-cyber-blue/10 transition-all relative overflow-hidden"
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                {theme === 'dark' ? (
+                  <motion.span
+                    key="sun"
+                    initial={{ rotate: -90, opacity: 0, scale: 0.5 }}
+                    animate={{ rotate: 0,   opacity: 1, scale: 1   }}
+                    exit={{    rotate: 90,  opacity: 0, scale: 0.5 }}
+                    transition={{ duration: 0.18 }}
+                    className="absolute inset-0 flex items-center justify-center"
+                  >
+                    <Sun size={15} className="text-amber-400" />
+                  </motion.span>
+                ) : (
+                  <motion.span
+                    key="moon"
+                    initial={{ rotate: 90,  opacity: 0, scale: 0.5 }}
+                    animate={{ rotate: 0,   opacity: 1, scale: 1   }}
+                    exit={{    rotate: -90, opacity: 0, scale: 0.5 }}
+                    transition={{ duration: 0.18 }}
+                    className="absolute inset-0 flex items-center justify-center"
+                  >
+                    <Moon size={15} className="text-cyber-blue" />
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.button>
           </div>
 
           {/* Auth area */}
@@ -204,6 +243,20 @@ export default function Navbar() {
                   {link.label}
                 </Link>
               ))}
+
+              {/* Theme toggle — mobile */}
+              <button
+                onClick={toggleTheme}
+                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg border border-cyber-blue/20 bg-cyber-blue/5 hover:bg-cyber-blue/10 transition-all text-sm"
+              >
+                {theme === 'dark'
+                  ? <Sun size={14} className="text-amber-400" />
+                  : <Moon size={14} className="text-cyber-blue" />
+                }
+                <span className="text-slate-300">
+                  {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                </span>
+              </button>
 
               <hr className="border-cyber-gray/50 my-2" />
 
