@@ -28,7 +28,7 @@ const COURSE = {
   description: 'Master the complete data analytics pipeline — from raw data to actionable business insights. Covers Python (Pandas, NumPy), SQL, data cleaning, EDA, visualization, statistics, and real-world case studies.',
   icon:        '📊',
   level:       1,
-  orderIndex:  1,
+  orderIndex:  1,   // slot 1 → AI Foundations(0) · Data Analytics(1) · ML(2) …
   isPublished: true,
 };
 
