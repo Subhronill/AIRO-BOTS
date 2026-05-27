@@ -13,6 +13,7 @@
     "prisma:seed": "ts-node prisma/seed/seed.ts",
     "expand:foundations": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\"} prisma/seed/expandFoundations.ts",
     "expand:quizzes": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\"} prisma/seed/expandQuizzes.ts",
+    "seed:data-analytics": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\"} prisma/seed/dataAnalytics.ts",
     "prisma:studio": "prisma studio",
     "setup": "npm install && prisma generate && prisma migrate dev --name init && ts-node prisma/seed/seed.ts"
   },
