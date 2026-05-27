@@ -29,7 +29,7 @@ router.get('/:slug', optionalAuthenticate, async (req: AuthRequest, res: Respons
           orderBy: { orderIndex: 'asc' },
           select: {
             id: true, slug: true, title: true, description: true,
-            orderIndex: true, xpReward: true, difficulty: true, language: true,
+            orderIndex: true, xpReward: true, difficulty: true, language: true, tier: true,
             _count: { select: { quizzes: true } },
           },
         },

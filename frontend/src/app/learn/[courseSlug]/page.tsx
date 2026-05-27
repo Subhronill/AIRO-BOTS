@@ -4,16 +4,274 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import Navbar from '../../../components/layout/Navbar';
-import api, { Course } from '../../../lib/api';
-import { ChevronRight, CheckCircle, Lock, Star } from 'lucide-react';
+import api, { Course, Chapter } from '../../../lib/api';
+import { ChevronRight, CheckCircle, Lock, Star, Zap } from 'lucide-react';
 
+// ─── Difficulty badge colours ─────────────────────────────────────────────────
 const DIFFICULTY_COLORS: Record<string, string> = {
   BEGINNER: '#22c55e', INTERMEDIATE: '#0ea5e9', ADVANCED: '#a855f7', EXPERT: '#ef4444',
 };
 
+// ─── Tier config ──────────────────────────────────────────────────────────────
+type TierKey = 'NOOB' | 'AMATEUR' | 'PRO' | 'MASTER' | 'GOD';
+
+const TIER_CONFIG: Record<TierKey, {
+  label: string;
+  subtitle: string;
+  emoji: string;
+  color: string;
+  glow: string;
+  bg: string;
+  border: string;
+  headerBg: string;
+  badge: string;
+}> = {
+  NOOB: {
+    label:     'Noob Level',
+    subtitle:  'Zero to Basics — Start here, no experience required',
+    emoji:     '🌱',
+    color:     '#22c55e',
+    glow:      'rgba(34,197,94,0.35)',
+    bg:        'rgba(34,197,94,0.04)',
+    border:    'rgba(34,197,94,0.20)',
+    headerBg:  'rgba(34,197,94,0.08)',
+    badge:     'bg-emerald-500/10 text-emerald-400 border-emerald-500/25',
+  },
+  AMATEUR: {
+    label:     'Amateur Level',
+    subtitle:  'Building Foundations — Core tools and real workflows',
+    emoji:     '⚡',
+    color:     '#0ea5e9',
+    glow:      'rgba(14,165,233,0.35)',
+    bg:        'rgba(14,165,233,0.04)',
+    border:    'rgba(14,165,233,0.20)',
+    headerBg:  'rgba(14,165,233,0.08)',
+    badge:     'bg-sky-500/10 text-sky-400 border-sky-500/25',
+  },
+  PRO: {
+    label:     'Pro Level',
+    subtitle:  'Getting Serious — Advanced techniques, real projects',
+    emoji:     '🔥',
+    color:     '#f97316',
+    glow:      'rgba(249,115,22,0.35)',
+    bg:        'rgba(249,115,22,0.04)',
+    border:    'rgba(249,115,22,0.20)',
+    headerBg:  'rgba(249,115,22,0.08)',
+    badge:     'bg-orange-500/10 text-orange-400 border-orange-500/25',
+  },
+  MASTER: {
+    label:     'Master Level',
+    subtitle:  'Expert Territory — Deep expertise, industry-level skills',
+    emoji:     '💎',
+    color:     '#a855f7',
+    glow:      'rgba(168,85,247,0.35)',
+    bg:        'rgba(168,85,247,0.04)',
+    border:    'rgba(168,85,247,0.20)',
+    headerBg:  'rgba(168,85,247,0.08)',
+    badge:     'bg-purple-500/10 text-purple-400 border-purple-500/25',
+  },
+  GOD: {
+    label:     'GOD Level',
+    subtitle:  'Transcendent Skills — Elite mastery, the 1% club',
+    emoji:     '👑',
+    color:     '#eab308',
+    glow:      'rgba(234,179,8,0.40)',
+    bg:        'rgba(234,179,8,0.04)',
+    border:    'rgba(234,179,8,0.25)',
+    headerBg:  'rgba(234,179,8,0.10)',
+    badge:     'bg-yellow-500/10 text-yellow-400 border-yellow-500/25',
+  },
+};
+
+const TIER_ORDER: TierKey[] = ['NOOB', 'AMATEUR', 'PRO', 'MASTER', 'GOD'];
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function groupByTier(chapters: (Chapter & { isCompleted?: boolean; isUnlocked?: boolean })[]) {
+  const map = new Map<TierKey, typeof chapters>();
+  for (const t of TIER_ORDER) map.set(t, []);
+  for (const ch of chapters) {
+    const tier = (ch.tier ?? 'NOOB') as TierKey;
+    map.get(tier)?.push(ch);
+  }
+  return map;
+}
+
+function hasMultipleTiers(chapters: Chapter[]) {
+  const tiers = new Set(chapters.map(ch => ch.tier ?? 'NOOB'));
+  return tiers.size > 1;
+}
+
+// ─── Chapter card ─────────────────────────────────────────────────────────────
+function ChapterCard({
+  chapter, index, courseSlug,
+}: {
+  chapter: Chapter & { isCompleted?: boolean; isUnlocked?: boolean };
+  index: number;
+  courseSlug: string;
+}) {
+  const isCompleted = chapter.isCompleted ?? false;
+  const isUnlocked  = chapter.isUnlocked  ?? (index === 0);
+  const diffColor   = DIFFICULTY_COLORS[chapter.difficulty] ?? '#64748b';
+
+  const card = (
+    <div className={[
+      'cyber-card p-5 flex items-center gap-4 transition-all duration-200',
+      isUnlocked && !isCompleted ? 'cursor-pointer hover:shadow-neon-blue/20 hover:border-cyber-blue/40' : '',
+      isCompleted               ? 'border-cyber-green/30'                                                 : '',
+      !isUnlocked               ? 'opacity-50 cursor-not-allowed'                                        : '',
+    ].join(' ')}>
+
+      {/* Index / status bubble */}
+      <div
+        className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-mono font-bold text-sm"
+        style={{
+          background: isCompleted ? 'rgba(34,197,94,0.15)'  : !isUnlocked ? 'rgba(100,116,139,0.08)' : 'rgba(14,165,233,0.10)',
+          color:      isCompleted ? '#22c55e'                : !isUnlocked ? '#475569'                 : '#0ea5e9',
+          border:    `1px solid ${isCompleted ? 'rgba(34,197,94,0.3)' : !isUnlocked ? 'rgba(100,116,139,0.15)' : 'rgba(14,165,233,0.2)'}`,
+        }}
+      >
+        {isCompleted ? <CheckCircle size={18} /> : !isUnlocked ? <Lock size={15} /> : index + 1}
+      </div>
+
+      {/* Text */}
+      <div className="flex-1 min-w-0">
+        <h3 className={`font-semibold ${isUnlocked ? 'text-white' : 'text-slate-500'}`}>
+          {chapter.title}
+        </h3>
+        <p className="text-sm text-slate-400 truncate">
+          {!isUnlocked ? 'Complete the previous chapter to unlock' : chapter.description}
+        </p>
+      </div>
+
+      {/* Meta */}
+      <div className="flex items-center gap-3 flex-shrink-0">
+        {isUnlocked ? (
+          <>
+            <span className="hidden md:flex items-center gap-1 text-xs" style={{ color: diffColor }}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: diffColor }} />
+              {chapter.difficulty}
+            </span>
+            <span className="text-xs text-yellow-400 flex items-center gap-1">
+              <Star size={12} /> {chapter.xpReward} XP
+            </span>
+            {chapter._count?.quizzes ? (
+              <span className="text-xs text-slate-500 font-mono">Quiz</span>
+            ) : null}
+            <ChevronRight size={16} className="text-slate-400" />
+          </>
+        ) : (
+          <Lock size={14} className="text-slate-600" />
+        )}
+      </div>
+    </div>
+  );
+
+  return isUnlocked
+    ? <Link href={`/learn/${courseSlug}/${chapter.slug}`}>{card}</Link>
+    : card;
+}
+
+// ─── Tier section header ──────────────────────────────────────────────────────
+function TierHeader({
+  tierKey, chapters, tierIndex,
+}: {
+  tierKey: TierKey;
+  chapters: (Chapter & { isCompleted?: boolean; isUnlocked?: boolean })[];
+  tierIndex: number;
+}) {
+  const cfg          = TIER_CONFIG[tierKey];
+  const completed    = chapters.filter(ch => ch.isCompleted).length;
+  const totalXP      = chapters.reduce((s, ch) => s + ch.xpReward, 0);
+  const allDone      = completed === chapters.length && chapters.length > 0;
+  const pct          = chapters.length > 0 ? Math.round((completed / chapters.length) * 100) : 0;
+
+  return (
+    <div className="mt-8 mb-3 first:mt-0">
+      {/* Connector line between tiers */}
+      {tierIndex > 0 && (
+        <div className="flex items-center gap-3 mb-6 px-2">
+          <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, transparent, ${cfg.color}40)` }} />
+          <span className="text-xs font-mono text-slate-500">LEVEL UP</span>
+          <div className="flex-1 h-px" style={{ background: `linear-gradient(to left, transparent, ${cfg.color}40)` }} />
+        </div>
+      )}
+
+      {/* Tier header card */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: tierIndex * 0.08 }}
+        className="rounded-xl p-5 mb-4 border"
+        style={{ background: cfg.headerBg, borderColor: cfg.border }}
+      >
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-4">
+            {/* Glowing emoji */}
+            <div
+              className="text-4xl flex-shrink-0 w-14 h-14 rounded-xl flex items-center justify-center"
+              style={{ background: cfg.bg, boxShadow: `0 0 20px ${cfg.glow}`, border: `1px solid ${cfg.border}` }}
+            >
+              {cfg.emoji}
+            </div>
+
+            <div>
+              <div className="flex items-center gap-2 mb-0.5">
+                <h3 className="text-lg font-display font-black" style={{ color: cfg.color }}>
+                  {cfg.label}
+                </h3>
+                {allDone && (
+                  <span className="text-xs px-1.5 py-0.5 rounded font-mono bg-emerald-500/15 text-emerald-400 border border-emerald-500/25">
+                    ✓ COMPLETE
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-slate-400">{cfg.subtitle}</p>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="flex items-center gap-4 text-sm flex-shrink-0">
+            <div className="text-center">
+              <div className="font-mono font-bold" style={{ color: cfg.color }}>{chapters.length}</div>
+              <div className="text-xs text-slate-500">chapters</div>
+            </div>
+            <div className="w-px h-8 bg-white/10" />
+            <div className="text-center">
+              <div className="font-mono font-bold text-yellow-400 flex items-center gap-1">
+                <Zap size={12} /> {totalXP}
+              </div>
+              <div className="text-xs text-slate-500">XP pool</div>
+            </div>
+            {completed > 0 && (
+              <>
+                <div className="w-px h-8 bg-white/10" />
+                <div className="text-center">
+                  <div className="font-mono font-bold text-emerald-400">{pct}%</div>
+                  <div className="text-xs text-slate-500">done</div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Progress bar inside tier header */}
+        {completed > 0 && (
+          <div className="mt-3 h-1.5 rounded-full bg-white/5 overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-700"
+              style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${cfg.color}, ${cfg.glow})` }}
+            />
+          </div>
+        )}
+      </motion.div>
+    </div>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 export default function CoursePage() {
   const { courseSlug } = useParams<{ courseSlug: string }>();
-  const [course, setCourse] = useState<Course | null>(null);
+  const [course, setCourse]   = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,11 +279,8 @@ export default function CoursePage() {
       try {
         const { data } = await api.get(`/courses/${courseSlug}`);
         setCourse(data);
-      } catch {
-        /* silent */
-      } finally {
-        setLoading(false);
-      }
+      } catch { /* silent */ }
+      finally  { setLoading(false); }
     };
     fetchData();
   }, [courseSlug]);
@@ -51,14 +306,17 @@ export default function CoursePage() {
     );
   }
 
-  const totalChapters  = course.chapters?.length ?? 0;
-  const completedCount = course.chapters?.filter(ch => ch.isCompleted).length ?? 0;
+  const chapters       = course.chapters ?? [];
+  const totalChapters  = chapters.length;
+  const completedCount = chapters.filter(ch => ch.isCompleted).length;
   const completionPct  = totalChapters > 0 ? Math.round((completedCount / totalChapters) * 100) : 0;
+  const useTiers       = hasMultipleTiers(chapters);
+  const tierMap        = groupByTier(chapters);
 
   return (
     <div className="min-h-screen bg-cyber-black">
       <Navbar />
-      <div className="max-w-5xl mx-auto px-4 pt-24 pb-12">
+      <div className="max-w-5xl mx-auto px-4 pt-24 pb-16">
 
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-slate-400 mb-6">
@@ -70,19 +328,24 @@ export default function CoursePage() {
         {/* Course Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="cyber-card p-8 mb-8 border-cyber-blue/30"
+          className="cyber-card p-8 mb-10 border-cyber-blue/30"
         >
           <div className="flex flex-col md:flex-row gap-6">
             <div className="text-6xl">{course.icon}</div>
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
                 <span className="text-xs font-mono px-2 py-1 rounded bg-cyber-blue/10 text-cyber-blue border border-cyber-blue/20">
                   Level {course.level}
                 </span>
+                {useTiers && (
+                  <span className="text-xs font-mono px-2 py-1 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                    5 Tiers
+                  </span>
+                )}
               </div>
               <h1 className="text-3xl font-display font-black text-white mb-3">{course.title}</h1>
               <p className="text-slate-400 mb-4">{course.description}</p>
-              <div className="flex items-center gap-4 text-sm">
+              <div className="flex items-center gap-4 text-sm flex-wrap">
                 <span className="text-slate-400">{totalChapters} chapters</span>
                 {completedCount > 0 && (
                   <>
@@ -90,10 +353,20 @@ export default function CoursePage() {
                     <span className="text-cyber-green">{completedCount} completed</span>
                   </>
                 )}
+                {useTiers && (
+                  <>
+                    <span className="text-slate-400">•</span>
+                    <span className="text-slate-400 flex items-center gap-1">
+                      {TIER_ORDER.filter(t => (tierMap.get(t)?.length ?? 0) > 0).map(t => (
+                        <span key={t} title={TIER_CONFIG[t].label}>{TIER_CONFIG[t].emoji}</span>
+                      ))}
+                    </span>
+                  </>
+                )}
               </div>
             </div>
 
-            {/* Progress ring — only shown once user has progress */}
+            {/* Progress ring */}
             {completedCount > 0 && totalChapters > 0 && (
               <div className="text-center min-w-[7rem]">
                 <div className="text-3xl font-display font-black text-cyber-blue mb-1">{completionPct}%</div>
@@ -106,85 +379,63 @@ export default function CoursePage() {
           </div>
         </motion.div>
 
-        {/* Chapter list */}
-        <div className="space-y-3">
-          <h2 className="text-xl font-display font-bold text-white mb-4">Chapters</h2>
+        {/* ── Tiered layout ── */}
+        {useTiers ? (
+          <div>
+            <h2 className="text-xl font-display font-bold text-white mb-2">Learning Path</h2>
+            <p className="text-sm text-slate-500 mb-6">
+              Progress through 5 tiers — from Noob to GOD. Complete each chapter to unlock the next.
+            </p>
 
-          {course.chapters?.map((chapter, i) => {
-            const isCompleted = chapter.isCompleted ?? false;
-            // First chapter always unlocked client-side as a fallback
-            const isUnlocked  = chapter.isUnlocked  ?? (i === 0);
-            const diffColor   = DIFFICULTY_COLORS[chapter.difficulty] ?? '#64748b';
+            {TIER_ORDER.map((tierKey, tierIndex) => {
+              const tierChapters = tierMap.get(tierKey) ?? [];
+              if (tierChapters.length === 0) return null;
 
-            const card = (
-              <div className={[
-                'cyber-card p-5 flex items-center gap-4 transition-all duration-200',
-                isUnlocked && !isCompleted ? 'cursor-pointer hover:shadow-neon-blue/20 hover:border-cyber-blue/40' : '',
-                isCompleted               ? 'border-cyber-green/30'                                                 : '',
-                !isUnlocked               ? 'opacity-50 cursor-not-allowed'                                        : '',
-              ].join(' ')}>
+              // global index offset so chapter numbers are continuous across tiers
+              const offset = TIER_ORDER
+                .slice(0, tierIndex)
+                .reduce((sum, t) => sum + (tierMap.get(t)?.length ?? 0), 0);
 
-                {/* Index / status bubble */}
-                <div
-                  className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-mono font-bold text-sm"
-                  style={{
-                    background: isCompleted ? 'rgba(34,197,94,0.15)'   : !isUnlocked ? 'rgba(100,116,139,0.08)' : 'rgba(14,165,233,0.10)',
-                    color:      isCompleted ? '#22c55e'                 : !isUnlocked ? '#475569'                : '#0ea5e9',
-                    border:    `1px solid ${isCompleted ? 'rgba(34,197,94,0.3)' : !isUnlocked ? 'rgba(100,116,139,0.15)' : 'rgba(14,165,233,0.2)'}`,
-                  }}
-                >
-                  {isCompleted ? <CheckCircle size={18} /> : !isUnlocked ? <Lock size={15} /> : i + 1}
+              return (
+                <div key={tierKey}>
+                  <TierHeader tierKey={tierKey} chapters={tierChapters} tierIndex={tierIndex} />
+
+                  <div className="space-y-3 pl-2 border-l-2 mb-2" style={{ borderColor: TIER_CONFIG[tierKey].border }}>
+                    {tierChapters.map((chapter, i) => (
+                      <motion.div
+                        key={chapter.id}
+                        initial={{ opacity: 0, x: -16 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: (tierIndex * 0.06) + (i * 0.04) }}
+                      >
+                        <ChapterCard
+                          chapter={chapter}
+                          index={offset + i}
+                          courseSlug={courseSlug}
+                        />
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
-
-                {/* Text */}
-                <div className="flex-1 min-w-0">
-                  <h3 className={`font-semibold ${isUnlocked ? 'text-white' : 'text-slate-500'}`}>
-                    {chapter.title}
-                  </h3>
-                  <p className="text-sm text-slate-400 truncate">
-                    {!isUnlocked
-                      ? 'Complete the previous chapter to unlock'
-                      : chapter.description}
-                  </p>
-                </div>
-
-                {/* Meta */}
-                <div className="flex items-center gap-3 flex-shrink-0">
-                  {isUnlocked ? (
-                    <>
-                      <span className="hidden md:flex items-center gap-1 text-xs" style={{ color: diffColor }}>
-                        <span className="w-1.5 h-1.5 rounded-full" style={{ background: diffColor }} />
-                        {chapter.difficulty}
-                      </span>
-                      <span className="text-xs text-yellow-400 flex items-center gap-1">
-                        <Star size={12} /> {chapter.xpReward} XP
-                      </span>
-                      {chapter._count?.quizzes ? (
-                        <span className="text-xs text-slate-500 font-mono">Quiz</span>
-                      ) : null}
-                      <ChevronRight size={16} className="text-slate-400" />
-                    </>
-                  ) : (
-                    <Lock size={14} className="text-slate-600" />
-                  )}
-                </div>
-              </div>
-            );
-
-            return (
+              );
+            })}
+          </div>
+        ) : (
+          /* ── Flat layout (courses without tiers) ── */
+          <div className="space-y-3">
+            <h2 className="text-xl font-display font-bold text-white mb-4">Chapters</h2>
+            {chapters.map((chapter, i) => (
               <motion.div
                 key={chapter.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.05 }}
               >
-                {isUnlocked
-                  ? <Link href={`/learn/${courseSlug}/${chapter.slug}`}>{card}</Link>
-                  : card}
+                <ChapterCard chapter={chapter} index={i} courseSlug={courseSlug} />
               </motion.div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

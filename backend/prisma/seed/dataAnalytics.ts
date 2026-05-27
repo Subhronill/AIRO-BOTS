@@ -45,6 +45,7 @@ const CHAPTERS = [
     orderIndex:  0,
     xpReward:    50,
     difficulty:  'BEGINNER',
+    tier:        'NOOB',
     language:    'python',
     codeExample: `# ── Your first data analytics program ──────────────────────────────
 # We manually represent a tiny sales dataset and compute basic analytics
@@ -253,6 +254,7 @@ You're about to build all of this. Let's go. 🏁`,
     orderIndex:  1,
     xpReward:    75,
     difficulty:  'BEGINNER',
+    tier:        'AMATEUR',
     language:    'python',
     codeExample: `import pandas as pd
 import numpy as np
@@ -558,6 +560,7 @@ print(dept_summary)
     orderIndex:  2,
     xpReward:    100,
     difficulty:  'INTERMEDIATE',
+    tier:        'PRO',
     language:    'python',
     codeExample: `import pandas as pd
 import numpy as np
@@ -869,6 +872,7 @@ df[["salary","age"]] = scaler.fit_transform(df[["salary","age"]])
     orderIndex:  3,
     xpReward:    100,
     difficulty:  'INTERMEDIATE',
+    tier:        'MASTER',
     language:    'python',
     codeExample: `import pandas as pd
 import matplotlib.pyplot as plt
@@ -1205,6 +1209,7 @@ A good EDA is not just charts — it's a **story**:
     orderIndex:  4,
     xpReward:    125,
     difficulty:  'INTERMEDIATE',
+    tier:        'GOD',
     language:    'python',
     codeExample: `import sqlite3
 import pandas as pd

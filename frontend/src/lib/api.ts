@@ -129,6 +129,7 @@ export interface Chapter {
   orderIndex: number;
   xpReward: number;
   difficulty: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'EXPERT';
+  tier: 'NOOB' | 'AMATEUR' | 'PRO' | 'MASTER' | 'GOD';
   quizzes?: Quiz[];
   _count?: { quizzes: number };
   /** Annotated server-side per authenticated user */
