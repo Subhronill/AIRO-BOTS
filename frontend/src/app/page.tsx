@@ -50,6 +50,82 @@ const STEPS = [
   { step: '03', title: 'Learn & build',        desc: 'Complete lessons, pass quizzes, earn XP, and level up.' },
 ];
 
+// ---------- bubbles ----------
+// size px | left % | dur s | del s | peak opacity | hex color | horizontal drift px
+const BUBBLES = [
+  { id:  1, size:  7, left:  4, dur:  9.0, del:  0.0, opacity: 0.55, color: '#0ea5e9', drift:  14 },
+  { id:  2, size: 13, left: 12, dur: 13.0, del:  1.8, opacity: 0.28, color: '#a855f7', drift: -12 },
+  { id:  3, size:  9, left: 22, dur: 11.0, del:  3.2, opacity: 0.42, color: '#0ea5e9', drift:  18 },
+  { id:  4, size:  5, left: 31, dur:  8.0, del:  0.6, opacity: 0.40, color: '#22c55e', drift:  -8 },
+  { id:  5, size: 17, left: 40, dur: 15.0, del:  2.4, opacity: 0.20, color: '#a855f7', drift:  10 },
+  { id:  6, size:  7, left: 52, dur: 10.0, del:  4.1, opacity: 0.46, color: '#0ea5e9', drift: -16 },
+  { id:  7, size: 21, left: 62, dur: 18.0, del:  1.0, opacity: 0.15, color: '#a855f7', drift:  14 },
+  { id:  8, size:  8, left: 73, dur: 12.0, del:  5.7, opacity: 0.40, color: '#22c55e', drift: -10 },
+  { id:  9, size:  6, left: 83, dur:  9.0, del:  2.6, opacity: 0.50, color: '#0ea5e9', drift:  16 },
+  { id: 10, size: 15, left: 92, dur: 14.0, del:  0.9, opacity: 0.24, color: '#a855f7', drift: -14 },
+  { id: 11, size:  5, left:  8, dur:  7.0, del:  6.3, opacity: 0.44, color: '#0ea5e9', drift:   8 },
+  { id: 12, size: 11, left: 18, dur: 12.0, del:  3.8, opacity: 0.30, color: '#a855f7', drift: -18 },
+  { id: 13, size:  6, left: 36, dur: 10.0, del:  7.2, opacity: 0.38, color: '#0ea5e9', drift:  12 },
+  { id: 14, size: 19, left: 47, dur: 17.0, del:  1.3, opacity: 0.13, color: '#a855f7', drift:  -6 },
+  { id: 15, size:  6, left: 58, dur:  8.0, del:  4.6, opacity: 0.46, color: '#22c55e', drift:  20 },
+  { id: 16, size: 10, left: 68, dur: 13.0, del:  2.9, opacity: 0.28, color: '#0ea5e9', drift: -20 },
+  { id: 17, size:  8, left: 78, dur: 10.0, del:  6.8, opacity: 0.38, color: '#a855f7', drift:  10 },
+  { id: 18, size:  5, left: 88, dur:  7.0, del:  3.4, opacity: 0.48, color: '#0ea5e9', drift: -12 },
+  { id: 19, size: 24, left: 55, dur: 22.0, del:  0.4, opacity: 0.10, color: '#a855f7', drift:   8 },
+  { id: 20, size:  4, left: 43, dur:  6.0, del:  8.1, opacity: 0.52, color: '#22c55e', drift: -14 },
+  { id: 21, size:  9, left: 28, dur: 11.0, del:  5.2, opacity: 0.34, color: '#0ea5e9', drift:  16 },
+  { id: 22, size:  5, left: 96, dur:  8.0, del:  7.7, opacity: 0.44, color: '#a855f7', drift:  -8 },
+  { id: 23, size: 12, left:  2, dur: 14.0, del:  4.9, opacity: 0.26, color: '#0ea5e9', drift:  12 },
+  { id: 24, size:  7, left: 65, dur:  9.0, del:  9.2, opacity: 0.42, color: '#22c55e', drift: -10 },
+  { id: 25, size: 10, left: 44, dur: 12.0, del:  6.5, opacity: 0.30, color: '#a855f7', drift:  14 },
+  { id: 26, size:  6, left: 16, dur:  8.5, del:  2.1, opacity: 0.44, color: '#0ea5e9', drift: -16 },
+  { id: 27, size: 14, left: 75, dur: 16.0, del:  5.0, opacity: 0.18, color: '#a855f7', drift:  10 },
+  { id: 28, size:  5, left: 50, dur:  7.5, del: 10.0, opacity: 0.50, color: '#22c55e', drift: -18 },
+  { id: 29, size:  8, left: 34, dur: 10.5, del:  8.8, opacity: 0.36, color: '#0ea5e9', drift:  22 },
+  { id: 30, size: 16, left: 86, dur: 19.0, del:  3.6, opacity: 0.16, color: '#a855f7', drift: -12 },
+];
+
+function Bubbles() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {BUBBLES.map((b) => (
+        <motion.div
+          key={b.id}
+          className="absolute bottom-0 rounded-full"
+          style={{
+            width:  b.size,
+            height: b.size,
+            left:   `${b.left}%`,
+            // inner highlight at top-left makes it look like a real bubble
+            background: `radial-gradient(circle at 30% 28%, rgba(255,255,255,0.6) 0%, ${b.color}99 35%, ${b.color}22 100%)`,
+            border: `0.5px solid ${b.color}55`,
+            boxShadow: `0 0 ${b.size * 2}px ${b.color}44`,
+          }}
+          animate={{
+            y:       [0, -1150],
+            x:       [0, b.drift, 0, b.drift * -0.5, 0],
+            opacity: [0, b.opacity, b.opacity, b.opacity * 0.4, 0],
+          }}
+          transition={{
+            duration: b.dur,
+            delay:    b.del,
+            repeat:   Infinity,
+            ease:     'linear',
+            x:       { ease: 'easeInOut', duration: b.dur, delay: b.del, repeat: Infinity },
+            opacity: {
+              ease:  'linear',
+              times: [0, 0.07, 0.78, 0.94, 1],
+              duration: b.dur,
+              delay:    b.del,
+              repeat:   Infinity,
+            },
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 // ---------- helpers ----------
 
 function inView(delay = 0) {
@@ -83,6 +159,8 @@ export default function HomePage() {
         <div className="absolute inset-0 grid-bg opacity-20 pointer-events-none" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] bg-cyber-blue/5 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-cyber-purple/5 rounded-full blur-2xl pointer-events-none" />
+
+        <Bubbles />
 
         <div className="relative z-10">
           <motion.div

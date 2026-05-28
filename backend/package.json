@@ -18,6 +18,9 @@
     "seed:da-noob-b2": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\"} prisma/seed/dataAnalyticsNoobBlock2.ts",
     "seed:da-noob-b3": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\"} prisma/seed/dataAnalyticsNoobBlock3.ts",
     "seed:da-noob-b4": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\"} prisma/seed/dataAnalyticsNoobBlock4.ts",
+    "reorder:noob-capstones": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\"} prisma/seed/reorderNoobCapstones.ts",
+    "seed:da-noob-b5": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\"} prisma/seed/dataAnalyticsNoobBlock5.ts",
+    "seed:da-noob-b6": "ts-node --compiler-options {\\\"module\\\":\\\"CommonJS\\\"} prisma/seed/dataAnalyticsNoobBlock6.ts",
     "prisma:studio": "prisma studio",
     "setup": "npm install && prisma generate && prisma migrate dev --name init && ts-node prisma/seed/seed.ts"
   },
