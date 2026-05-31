@@ -91,6 +91,7 @@ model Chapter {
   orderIndex  Int
   xpReward    Int        @default(50)
   difficulty  Difficulty @default(BEGINNER)
+  tier        String     @default("NOOB")
   isPublished Boolean    @default(true)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
