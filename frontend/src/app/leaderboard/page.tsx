@@ -211,10 +211,10 @@ export default function LeaderboardPage() {
             <div className="flex items-center gap-4">
               <div className="text-slate-500 font-mono font-black text-lg">#?</div>
               <div className="w-10 h-10 rounded-full border border-cyber-blue/50 bg-cyber-blue/20 flex items-center justify-center text-cyber-blue font-black text-sm">
-                {getInitials(user.name)}
+                {getInitials(user.displayName || user.username)}
               </div>
               <div className="flex-1">
-                <div className="text-white font-mono font-bold text-sm">{user.name} (You)</div>
+                <div className="text-white font-mono font-bold text-sm">{user.displayName || user.username} (You)</div>
                 <div className="text-slate-500 text-xs font-mono">Keep learning to climb the rankings!</div>
               </div>
               <div className="text-cyber-blue font-mono text-sm font-bold">{user.xp || 0} XP</div>
