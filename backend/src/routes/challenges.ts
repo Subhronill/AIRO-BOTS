@@ -24,7 +24,9 @@ interface ParsedTestCase {
   expectedOutput: string;
 }
 
-function parseJson<T>(raw: string, fallback: T): T {
+function parseJson<T>(raw: unknown, fallback: T): T {
+  // PostgreSQL Json fields arrive already parsed; SQLite stores them as strings.
+  if (typeof raw !== 'string') return raw as T;
   try { return JSON.parse(raw) as T; } catch { return fallback; }
 }
 

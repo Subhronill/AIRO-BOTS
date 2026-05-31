@@ -7,7 +7,7 @@ services:
     rootDir: backend
 
     # Install deps, generate Prisma client for PostgreSQL, compile TypeScript
-    buildCommand: npm install && npx prisma generate --schema=prisma/schema.postgres.prisma && npm run build
+    buildCommand: npm install --include=dev && npx prisma generate --schema=prisma/schema.postgres.prisma && npm run build
 
     # Push DB schema on every start, then launch the server
     startCommand: npx prisma db push --schema=prisma/schema.postgres.prisma && node dist/index.js
