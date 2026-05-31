@@ -26,23 +26,22 @@ async function main() {
   console.log('🔄  Reordering Noob capstone chapters…\n');
 
   for (const { slug, newOrderIndex } of REORDERS) {
-    const rows = await prisma.$queryRawUnsafe<{ id: string; title: string }[]>(
-      `SELECT id, title FROM Chapter WHERE slug = ? LIMIT 1`,
-      slug,
-    );
+    const row = await prisma.chapter.findFirst({
+      where: { slug },
+      select: { id: true, title: true },
+    });
 
-    if (!rows.length) {
+    if (!row) {
       console.log(`⚠️   Chapter not found: ${slug} — skipping`);
       continue;
     }
 
-    await prisma.$executeRawUnsafe(
-      `UPDATE Chapter SET orderIndex = ? WHERE slug = ?`,
-      newOrderIndex,
-      slug,
-    );
+    await prisma.chapter.updateMany({
+      where: { slug },
+      data: { orderIndex: newOrderIndex },
+    });
 
-    console.log(`✅  "${rows[0].title}" → orderIndex ${newOrderIndex}`);
+    console.log(`✅  "${row.title}" → orderIndex ${newOrderIndex}`);
   }
 
   console.log('\n✔   Done — capstones moved to positions 27-30.');

@@ -737,15 +737,15 @@ async function main() {
 
   for (const spec of CHALLENGES) {
     // 1. Find chapter
-    const rows = await prisma.$queryRawUnsafe<{ id: string; title: string }[]>(
-      `SELECT id, title FROM Chapter WHERE slug = ? LIMIT 1`,
-      spec.chapterSlug,
-    );
-    if (!rows.length) {
+    const chapterRow = await prisma.chapter.findFirst({
+      where: { slug: spec.chapterSlug },
+      select: { id: true, title: true },
+    });
+    if (!chapterRow) {
       console.log(`⚠️   Chapter not found: ${spec.chapterSlug} — skipping`);
       continue;
     }
-    const { id: chapterId, title: chapterTitle } = rows[0];
+    const { id: chapterId, title: chapterTitle } = chapterRow;
 
     // 2. Check if challenge already exists
     const existing = await prisma.codingChallenge.findUnique({ where: { chapterId } });

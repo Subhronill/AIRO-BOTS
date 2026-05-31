@@ -1570,10 +1570,10 @@ async function main() {
 
   // 2. Re-index existing chapters to make room for NOOB chapters (0-99)
   console.log('📐 Re-indexing existing chapters...');
-  await prisma.$executeRawUnsafe(`UPDATE Chapter SET orderIndex = 100 WHERE slug = 'da1-pandas-numpy-foundations'`);
-  await prisma.$executeRawUnsafe(`UPDATE Chapter SET orderIndex = 200 WHERE slug = 'da2-data-cleaning-preprocessing'`);
-  await prisma.$executeRawUnsafe(`UPDATE Chapter SET orderIndex = 300 WHERE slug = 'da3-eda-visualisation'`);
-  await prisma.$executeRawUnsafe(`UPDATE Chapter SET orderIndex = 400 WHERE slug = 'da4-sql-for-analytics'`);
+  await prisma.chapter.updateMany({ where: { slug: 'da1-pandas-numpy-foundations' }, data: { orderIndex: 100 } });
+  await prisma.chapter.updateMany({ where: { slug: 'da2-data-cleaning-preprocessing' }, data: { orderIndex: 200 } });
+  await prisma.chapter.updateMany({ where: { slug: 'da3-eda-visualisation' }, data: { orderIndex: 300 } });
+  await prisma.chapter.updateMany({ where: { slug: 'da4-sql-for-analytics' }, data: { orderIndex: 400 } });
   console.log('  ✅ AMATEUR → 100, PRO → 200, MASTER → 300, GOD → 400\n');
 
   // 3. Seed new NOOB chapters
@@ -1583,11 +1583,11 @@ async function main() {
     const { questions, ...chapterData } = ch as any;
 
     // Skip if already seeded
-    const existing = await prisma.$queryRawUnsafe<any[]>(
-      `SELECT id FROM Chapter WHERE courseId = ? AND slug = ?`,
-      course.id, chapterData.slug,
-    );
-    if (existing.length > 0) {
+    const existing = await prisma.chapter.findFirst({
+      where: { courseId: course.id, slug: chapterData.slug },
+      select: { id: true },
+    });
+    if (existing) {
       console.log(`  ⏭️  [${chapterData.orderIndex}] ${chapterData.title} — already exists, skipping`);
       continue;
     }

@@ -1945,18 +1945,20 @@ async function main() {
     }));
 
     // Idempotency — check chapter + quiz
-    const existingChapter = await prisma.$queryRawUnsafe<{ id: string }[]>(
-      `SELECT id FROM Chapter WHERE slug = ? LIMIT 1`, ch.slug,
-    );
+    const existingChapter = await prisma.chapter.findFirst({
+      where: { slug: ch.slug },
+      select: { id: true },
+    });
 
     let chapterId: string;
 
-    if (existingChapter.length) {
-      chapterId = existingChapter[0].id;
-      const existingQuiz = await prisma.$queryRawUnsafe<{ id: string }[]>(
-        `SELECT id FROM Quiz WHERE chapterId = ? LIMIT 1`, chapterId,
-      );
-      if (existingQuiz.length) {
+    if (existingChapter) {
+      chapterId = existingChapter.id;
+      const existingQuiz = await prisma.quiz.findFirst({
+        where: { chapterId },
+        select: { id: true },
+      });
+      if (existingQuiz) {
         console.log(`  ⏭  [${ch.orderIndex}] ${ch.title}  (already exists — skipping)`);
         continue;
       }

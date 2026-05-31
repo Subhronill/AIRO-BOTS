@@ -1528,11 +1528,11 @@ async function main() {
   for (const ch of CHAPTERS) {
     const { questions, ...chapterData } = ch as any;
 
-    const existing = await prisma.$queryRawUnsafe<any[]>(
-      `SELECT id FROM Chapter WHERE courseId = ? AND slug = ?`,
-      course.id, chapterData.slug,
-    );
-    if (existing.length > 0) {
+    const existing = await prisma.chapter.findFirst({
+      where: { courseId: course.id, slug: chapterData.slug },
+      select: { id: true },
+    });
+    if (existing) {
       console.log(`  ⏭️  [${chapterData.orderIndex}] ${chapterData.title} — already exists, skipping`);
       continue;
     }
