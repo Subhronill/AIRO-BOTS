@@ -30,13 +30,15 @@ model User {
   updatedAt       DateTime  @updatedAt
 
   // Relations
-  progress        Progress[]
-  quizAttempts    QuizAttempt[]
-  achievements    UserAchievement[]
-  playgroundSaves PlaygroundSave[]
-  notes           Note[]
-  activities      Activity[]
-  refreshTokens   RefreshToken[]
+  progress          Progress[]
+  quizAttempts      QuizAttempt[]
+  achievements      UserAchievement[]
+  playgroundSaves   PlaygroundSave[]
+  notes             Note[]
+  activities        Activity[]
+  refreshTokens     RefreshToken[]
+  codingAttempts    CodingAttempt[]
+  levelTestAttempts LevelTestAttempt[]
 
   @@index([email])
   @@index([username])
@@ -65,6 +67,7 @@ model Course {
 
   chapters    Chapter[]
   progress    Progress[]
+  levelTests  LevelTest[]
 }
 
 model Chapter {
@@ -84,10 +87,11 @@ model Chapter {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
-  course      Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  quizzes     Quiz[]
-  progress    Progress[]
-  notes       Note[]
+  course          Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  quizzes         Quiz[]
+  progress        Progress[]
+  notes           Note[]
+  codingChallenge CodingChallenge?
 
   @@unique([courseId, slug])
   @@index([courseId])
@@ -229,4 +233,95 @@ model Activity {
 
   @@index([userId])
   @@index([createdAt])
+}
+
+// ─── Optional coding challenges (one per chapter, not required to progress) ───
+
+model CodingChallenge {
+  id               String          @id @default(uuid())
+  chapterId        String          @unique
+  title            String
+  problemStatement String          // Markdown
+  starterCode      String
+  hints            String          // JSON: string[]
+  testCases        String          // JSON: { id, description, expectedOutput }[]
+  language         String          @default("python")
+  difficulty       String          @default("BEGINNER")
+  xpReward         Int             @default(50)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  chapter          Chapter         @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  attempts         CodingAttempt[]
+}
+
+model CodingAttempt {
+  id          String          @id @default(uuid())
+  userId      String
+  challengeId String
+  code        String
+  passed      Boolean
+  xpAwarded   Int             @default(0)
+  createdAt   DateTime        @default(now())
+
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  challenge   CodingChallenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([challengeId])
+}
+
+// ─── Level Test (Mega Quiz at end of each tier) ─────────────────────────────
+
+model LevelTest {
+  id           String              @id @default(uuid())
+  courseId     String
+  tier         String              // NOOB | AMATEUR | PRO | MASTER | GOD
+  title        String
+  description  String
+  timeLimit    Int                 @default(3600)   // seconds (60 min)
+  passingScore Int                 @default(60)     // out of 90 (30Q × 3)
+  xpReward     Int                 @default(500)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  course       Course              @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  questions    LevelTestQuestion[]
+  attempts     LevelTestAttempt[]
+
+  @@unique([courseId, tier])
+  @@index([courseId])
+}
+
+model LevelTestQuestion {
+  id            String    @id @default(uuid())
+  levelTestId   String
+  text          String
+  options       String    // JSON: string[]
+  correctAnswer String
+  explanation   String?
+  topic         String?
+  orderIndex    Int
+
+  levelTest     LevelTest @relation(fields: [levelTestId], references: [id], onDelete: Cascade)
+
+  @@index([levelTestId])
+}
+
+model LevelTestAttempt {
+  id          String    @id @default(uuid())
+  userId      String
+  levelTestId String
+  score       Int
+  answers     String    // JSON: Record<questionId, selectedAnswer>
+  passed      Boolean
+  timeSpent   Int       @default(0)
+  xpEarned    Int       @default(0)
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  levelTest   LevelTest @relation(fields: [levelTestId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([levelTestId])
 }

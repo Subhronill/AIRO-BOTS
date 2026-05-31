@@ -2,9 +2,11 @@
  * killPorts.js — cross-platform port cleaner
  * Kills any process sitting on ports 4000, 3000, 3001, 3002
  * before the dev servers start, so you never hit EADDRINUSE.
+ * Also prints the local network IP so you can open the site on your phone.
  */
 'use strict';
 const { execSync } = require('child_process');
+const os = require('os');
 
 const PORTS = [4000, 3000, 3001, 3002];
 
@@ -46,6 +48,24 @@ function killPort(port) {
   }
 }
 
+function getLocalIP() {
+  const ifaces = os.networkInterfaces();
+  for (const iface of Object.values(ifaces)) {
+    for (const info of iface ?? []) {
+      if (info.family === 'IPv4' && !info.internal) return info.address;
+    }
+  }
+  return null;
+}
+
 console.log('\n🔪  Clearing dev ports...');
 for (const p of PORTS) killPort(p);
-console.log('✅  Ports clear — starting servers\n');
+
+const ip = getLocalIP();
+console.log('✅  Ports clear — starting servers');
+if (ip) {
+  console.log(`\n📱  Phone access (same Wi-Fi):`);
+  console.log(`    Frontend  → http://${ip}:3000`);
+  console.log(`    Backend   → http://${ip}:4000`);
+}
+console.log('');

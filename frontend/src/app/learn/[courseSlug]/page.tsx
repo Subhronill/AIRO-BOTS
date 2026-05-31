@@ -4,8 +4,11 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import Navbar from '../../../components/layout/Navbar';
-import api, { Course, Chapter } from '../../../lib/api';
-import { ChevronRight, CheckCircle, Lock, Star, Zap } from 'lucide-react';
+import api, { Course, Chapter, LevelTestStatus } from '../../../lib/api';
+import {
+  ChevronRight, CheckCircle, Lock, Star, Zap,
+  Trophy, ClipboardList, ShieldCheck, ArrowRight,
+} from 'lucide-react';
 
 // ─── Difficulty badge colours ─────────────────────────────────────────────────
 const DIFFICULTY_COLORS: Record<string, string> = {
@@ -90,15 +93,16 @@ function groupByTier(chapters: (Chapter & { isCompleted?: boolean; isUnlocked?: 
   const map = new Map<TierKey, typeof chapters>();
   for (const t of TIER_ORDER) map.set(t, []);
   for (const ch of chapters) {
-    const tier = (ch.tier ?? 'NOOB') as TierKey;
-    map.get(tier)?.push(ch);
+    if (!ch.tier) continue; // skip legacy un-tiered chapters — shown below in flat section
+    const tier = ch.tier as TierKey;
+    if (map.has(tier)) map.get(tier)!.push(ch);
   }
   return map;
 }
 
-function hasMultipleTiers(chapters: Chapter[]) {
-  const tiers = new Set(chapters.map(ch => ch.tier ?? 'NOOB'));
-  return tiers.size > 1;
+/** True if any chapter has an explicit tier — even a single-tier course shows the Learning Path view */
+function hasTieredContent(chapters: Chapter[]) {
+  return chapters.some(ch => !!ch.tier);
 }
 
 // ─── Chapter card ─────────────────────────────────────────────────────────────
@@ -115,7 +119,7 @@ function ChapterCard({
 
   const card = (
     <div className={[
-      'cyber-card p-5 flex items-center gap-4 transition-all duration-200',
+      'cyber-card p-3 sm:p-5 flex items-center gap-3 sm:gap-4 transition-all duration-200',
       isUnlocked && !isCompleted ? 'cursor-pointer hover:shadow-neon-blue/20 hover:border-cyber-blue/40' : '',
       isCompleted               ? 'border-cyber-green/30'                                                 : '',
       !isUnlocked               ? 'opacity-50 cursor-not-allowed'                                        : '',
@@ -169,6 +173,136 @@ function ChapterCard({
   return isUnlocked
     ? <Link href={`/learn/${courseSlug}/${chapter.slug}`}>{card}</Link>
     : card;
+}
+
+// ─── Level Test Card ──────────────────────────────────────────────────────────
+function LevelTestCard({
+  lt, tierKey, courseSlug, tierIndex,
+}: {
+  lt: LevelTestStatus;
+  tierKey: TierKey;
+  courseSlug: string;
+  tierIndex: number;
+}) {
+  const cfg = TIER_CONFIG[tierKey];
+
+  const state: 'passed' | 'available' | 'locked' =
+    lt.passed ? 'passed' : lt.available ? 'available' : 'locked';
+
+  const stateConfig = {
+    passed: {
+      bg:     'rgba(34,197,94,0.06)',
+      border: 'rgba(34,197,94,0.30)',
+      icon:   <ShieldCheck size={28} className="text-emerald-400" />,
+      label:  'LEVEL PASSED',
+      badge:  'bg-emerald-500/15 text-emerald-400 border-emerald-500/25',
+      desc:   'You have passed this level test. Well done!',
+      cta:    'View Results',
+    },
+    available: {
+      bg:     `rgba(${cfg.color.replace('#', '').match(/.{2}/g)!.map(h => parseInt(h, 16)).join(',')}, 0.06)`,
+      border: cfg.border,
+      icon:   <Trophy size={28} style={{ color: cfg.color }} />,
+      label:  'LEVEL TEST READY',
+      badge:  '',
+      desc:   `All ${tierKey} chapters complete! Take the 30-question Level Test to advance to the next tier.`,
+      cta:    'Take the Test',
+    },
+    locked: {
+      bg:     'rgba(100,116,139,0.04)',
+      border: 'rgba(100,116,139,0.15)',
+      icon:   <Lock size={28} className="text-slate-600" />,
+      label:  'LEVEL TEST LOCKED',
+      badge:  '',
+      desc:   'Complete all chapters in this tier to unlock the Level Test.',
+      cta:    '',
+    },
+  }[state];
+
+  const inner = (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: tierIndex * 0.08 + 0.15 }}
+      whileHover={state !== 'locked' ? { scale: 1.01 } : {}}
+      className="relative overflow-hidden rounded-2xl p-4 sm:p-5 flex items-center gap-3 sm:gap-5 border transition-all duration-300"
+      style={{
+        background: stateConfig.bg,
+        borderColor: stateConfig.border,
+        boxShadow: state === 'available' ? `0 0 24px ${cfg.glow}` : 'none',
+        cursor: state === 'locked' ? 'not-allowed' : 'pointer',
+        opacity: state === 'locked' ? 0.55 : 1,
+      }}
+    >
+      {/* Shimmer on available */}
+      {state === 'available' && (
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          animate={{ x: ['-100%', '200%'] }}
+          transition={{ duration: 2.4, repeat: Infinity, repeatDelay: 3, ease: 'easeInOut' }}
+          style={{
+            background: `linear-gradient(105deg, transparent 40%, ${cfg.color}18 50%, transparent 60%)`,
+          }}
+        />
+      )}
+
+      {/* Icon bubble */}
+      <div
+        className="flex-shrink-0 w-10 h-10 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center"
+        style={{
+          background: state === 'passed'
+            ? 'rgba(34,197,94,0.12)'
+            : state === 'available'
+            ? cfg.bg
+            : 'rgba(100,116,139,0.06)',
+          border: `1px solid ${stateConfig.border}`,
+          boxShadow: state === 'available' ? `0 0 16px ${cfg.glow}` : 'none',
+        }}
+      >
+        {stateConfig.icon}
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1 flex-wrap">
+          <span
+            className="text-xs font-mono font-bold px-2 py-0.5 rounded border"
+            style={
+              state === 'passed'
+                ? { background: 'rgba(34,197,94,0.12)', color: '#22c55e', borderColor: 'rgba(34,197,94,0.3)' }
+                : state === 'available'
+                ? { background: cfg.bg, color: cfg.color, borderColor: cfg.border }
+                : { background: 'rgba(100,116,139,0.08)', color: '#475569', borderColor: 'rgba(100,116,139,0.15)' }
+            }
+          >
+            {stateConfig.label}
+          </span>
+          {state !== 'locked' && (
+            <span className="text-xs text-yellow-400 flex items-center gap-1">
+              <Zap size={11} /> {lt.xpReward} XP
+            </span>
+          )}
+          <span className="text-xs text-slate-500 flex items-center gap-1">
+            <ClipboardList size={11} /> 30 Questions
+          </span>
+        </div>
+        <p className="text-sm font-semibold text-white mb-0.5">{lt.title}</p>
+        <p className="text-xs text-slate-400 truncate">{stateConfig.desc}</p>
+      </div>
+
+      {/* Arrow */}
+      {state !== 'locked' && (
+        <ArrowRight size={20} style={{ color: state === 'passed' ? '#22c55e' : cfg.color, flexShrink: 0 }} />
+      )}
+    </motion.div>
+  );
+
+  if (state === 'locked') return inner;
+  return (
+    <Link href={`/learn/${courseSlug}/level-test/${lt.tier.toLowerCase()}`}>
+      {inner}
+    </Link>
+  );
 }
 
 // ─── Tier section header ──────────────────────────────────────────────────────
@@ -230,23 +364,23 @@ function TierHeader({
           </div>
 
           {/* Stats */}
-          <div className="flex items-center gap-4 text-sm flex-shrink-0">
+          <div className="flex items-center gap-3 sm:gap-4 text-sm flex-shrink-0">
             <div className="text-center">
-              <div className="font-mono font-bold" style={{ color: cfg.color }}>{chapters.length}</div>
-              <div className="text-xs text-slate-500">chapters</div>
+              <div className="font-mono font-bold text-sm" style={{ color: cfg.color }}>{chapters.length}</div>
+              <div className="text-xs text-slate-500">ch.</div>
             </div>
-            <div className="w-px h-8 bg-white/10" />
+            <div className="w-px h-6 bg-white/10" />
             <div className="text-center">
-              <div className="font-mono font-bold text-yellow-400 flex items-center gap-1">
-                <Zap size={12} /> {totalXP}
+              <div className="font-mono font-bold text-yellow-400 flex items-center gap-0.5 text-sm">
+                <Zap size={11} /> {totalXP}
               </div>
-              <div className="text-xs text-slate-500">XP pool</div>
+              <div className="text-xs text-slate-500">XP</div>
             </div>
             {completed > 0 && (
               <>
-                <div className="w-px h-8 bg-white/10" />
+                <div className="w-px h-6 bg-white/10" />
                 <div className="text-center">
-                  <div className="font-mono font-bold text-emerald-400">{pct}%</div>
+                  <div className="font-mono font-bold text-emerald-400 text-sm">{pct}%</div>
                   <div className="text-xs text-slate-500">done</div>
                 </div>
               </>
@@ -306,17 +440,28 @@ export default function CoursePage() {
     );
   }
 
-  const chapters       = course.chapters ?? [];
-  const totalChapters  = chapters.length;
-  const completedCount = chapters.filter(ch => ch.isCompleted).length;
+  const chapters        = course.chapters ?? [];
+  // Count only tiered chapters for header stats (ignore old legacy chapters)
+  const tieredChapters  = chapters.filter(ch => !!ch.tier);
+  const countForStats   = tieredChapters.length > 0 ? tieredChapters : chapters;
+  const totalChapters   = countForStats.length;
+  const completedCount  = countForStats.filter(ch => ch.isCompleted).length;
   const completionPct  = totalChapters > 0 ? Math.round((completedCount / totalChapters) * 100) : 0;
-  const useTiers       = hasMultipleTiers(chapters);
+  const useTiers       = hasTieredContent(chapters);
   const tierMap        = groupByTier(chapters);
+  // Legacy chapters that have no tier — shown below the Learning Path (or as full list if no tiers)
+  const legacyChapters = chapters.filter(ch => !ch.tier);
+
+  // Build a quick lookup: tier → LevelTestStatus
+  const ltByTier: Record<string, LevelTestStatus> = {};
+  for (const lt of course.levelTestStatus ?? []) {
+    ltByTier[lt.tier] = lt;
+  }
 
   return (
     <div className="min-h-screen bg-cyber-black">
       <Navbar />
-      <div className="max-w-5xl mx-auto px-4 pt-24 pb-16">
+      <div className="max-w-5xl mx-auto px-4 pt-20 sm:pt-24 pb-16">
 
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-slate-400 mb-6">
@@ -328,10 +473,10 @@ export default function CoursePage() {
         {/* Course Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="cyber-card p-8 mb-10 border-cyber-blue/30"
+          className="cyber-card p-5 sm:p-8 mb-10 border-cyber-blue/30"
         >
           <div className="flex flex-col md:flex-row gap-6">
-            <div className="text-6xl">{course.icon}</div>
+            <div className="text-5xl sm:text-6xl">{course.icon}</div>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2 flex-wrap">
                 <span className="text-xs font-mono px-2 py-1 rounded bg-cyber-blue/10 text-cyber-blue border border-cyber-blue/20">
@@ -343,7 +488,7 @@ export default function CoursePage() {
                   </span>
                 )}
               </div>
-              <h1 className="text-3xl font-display font-black text-white mb-3">{course.title}</h1>
+              <h1 className="text-2xl sm:text-3xl font-display font-black text-white mb-3">{course.title}</h1>
               <p className="text-slate-400 mb-4">{course.description}</p>
               <div className="flex items-center gap-4 text-sm flex-wrap">
                 <span className="text-slate-400">{totalChapters} chapters</span>
@@ -384,7 +529,7 @@ export default function CoursePage() {
           <div>
             <h2 className="text-xl font-display font-bold text-white mb-2">Learning Path</h2>
             <p className="text-sm text-slate-500 mb-6">
-              Progress through 5 tiers — from Noob to GOD. Complete each chapter to unlock the next.
+              Progress through 5 tiers — from Noob to GOD. Complete each tier and pass its Level Test to advance.
             </p>
 
             {TIER_ORDER.map((tierKey, tierIndex) => {
@@ -396,11 +541,13 @@ export default function CoursePage() {
                 .slice(0, tierIndex)
                 .reduce((sum, t) => sum + (tierMap.get(t)?.length ?? 0), 0);
 
+              const lt = ltByTier[tierKey];
+
               return (
                 <div key={tierKey}>
                   <TierHeader tierKey={tierKey} chapters={tierChapters} tierIndex={tierIndex} />
 
-                  <div className="space-y-3 pl-2 border-l-2 mb-2" style={{ borderColor: TIER_CONFIG[tierKey].border }}>
+                  <div className="space-y-3 pl-2 border-l-2 mb-4" style={{ borderColor: TIER_CONFIG[tierKey].border }}>
                     {tierChapters.map((chapter, i) => (
                       <motion.div
                         key={chapter.id}
@@ -416,12 +563,47 @@ export default function CoursePage() {
                       </motion.div>
                     ))}
                   </div>
+
+                  {/* ── Level Test card (if one exists for this tier) ── */}
+                  {lt && (
+                    <div className="pl-2 mb-2">
+                      <LevelTestCard
+                        lt={lt}
+                        tierKey={tierKey}
+                        courseSlug={courseSlug}
+                        tierIndex={tierIndex}
+                      />
+                    </div>
+                  )}
                 </div>
               );
             })}
+
+            {/* ── Legacy / introductory chapters (no tier set) ── */}
+            {legacyChapters.length > 0 && (
+              <div className="mt-10">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="flex-1 h-px bg-white/5" />
+                  <span className="text-xs font-mono text-slate-600 px-2">INTRODUCTORY CHAPTERS</span>
+                  <div className="flex-1 h-px bg-white/5" />
+                </div>
+                <div className="space-y-3 opacity-60">
+                  {legacyChapters.map((chapter, i) => (
+                    <motion.div
+                      key={chapter.id}
+                      initial={{ opacity: 0, x: -16 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.04 }}
+                    >
+                      <ChapterCard chapter={chapter} index={i} courseSlug={courseSlug} />
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ) : (
-          /* ── Flat layout (courses without tiers) ── */
+          /* ── Flat layout (courses without any tiered chapters) ── */
           <div className="space-y-3">
             <h2 className="text-xl font-display font-bold text-white mb-4">Chapters</h2>
             {chapters.map((chapter, i) => (

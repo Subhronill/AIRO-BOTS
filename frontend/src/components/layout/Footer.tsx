@@ -4,9 +4,9 @@ import { Cpu } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="border-t border-cyber-gray/50 py-12">
+    <footer className="border-t border-cyber-gray/50 py-8 sm:py-12">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-6 sm:mb-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 rounded-lg bg-cyber-gradient flex items-center justify-center">

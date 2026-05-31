@@ -38,8 +38,9 @@ export default function Navbar() {
     }
   };
 
-  // Secondary links (always visible)
+  // Secondary links (always visible in desktop + mobile menus)
   const secondaryLinks = [
+    { href: '/learn', label: 'Learn' },
     { href: '/playground', label: 'Playground' },
     { href: '/leaderboard', label: 'Leaderboard' },
   ];
@@ -64,8 +65,8 @@ export default function Navbar() {
               <div className="absolute -inset-1 rounded-lg bg-cyber-gradient opacity-0 group-hover:opacity-30 blur transition-opacity" />
             </div>
             <div>
-              <span className="font-display font-black text-xl text-white tracking-wider">AIRO</span>
-              <span className="text-cyber-blue font-display font-bold text-xl tracking-widest"> BOTS</span>
+              <span className={`font-display font-black text-xl tracking-wider ${theme === 'light' ? 'text-slate-800' : 'text-white'}`}>AIRO</span>
+              <span className={`font-display font-bold text-xl tracking-widest ${theme === 'light' ? 'text-sky-600' : 'text-cyber-blue'}`}> BOTS</span>
             </div>
           </Link>
 
@@ -74,9 +75,13 @@ export default function Navbar() {
             {/* AI ROOM — primary highlighted link */}
             <button
               onClick={handleAIRoom}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-cyber-blue hover:text-white hover:bg-cyber-blue/15 transition-all border border-cyber-blue/20 hover:border-cyber-blue/50 mr-2"
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all mr-2 ${
+                theme === 'light'
+                  ? 'bg-gradient-to-r from-sky-500 to-cyan-500 text-white border-0 shadow-sm hover:from-sky-600 hover:to-cyan-600 hover:shadow-md'
+                  : 'text-cyber-blue hover:text-white hover:bg-cyber-blue/15 border border-cyber-blue/20 hover:border-cyber-blue/50'
+              }`}
             >
-              <Zap size={14} className="text-cyber-green" />
+              <Zap size={14} className={theme === 'light' ? 'text-yellow-300' : 'text-cyber-green'} />
               AI ROOM
             </button>
 
@@ -84,7 +89,11 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="px-4 py-2 text-slate-300 hover:text-cyber-blue transition-colors text-sm font-medium rounded-lg hover:bg-cyber-blue/10"
+                className={`px-4 py-2 transition-colors text-sm font-medium rounded-lg hover:bg-cyber-blue/10 ${
+                  theme === 'light'
+                    ? 'text-slate-600 hover:text-sky-600'
+                    : 'text-slate-300 hover:text-cyber-blue'
+                }`}
               >
                 {link.label}
               </Link>
@@ -98,7 +107,11 @@ export default function Navbar() {
               whileTap={{ scale: 0.92 }}
               onClick={toggleTheme}
               title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              className="w-9 h-9 rounded-lg flex items-center justify-center border border-cyber-blue/20 hover:border-cyber-blue/50 bg-cyber-blue/5 hover:bg-cyber-blue/10 transition-all relative overflow-hidden"
+              className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all relative overflow-hidden ${
+                theme === 'light'
+                  ? 'border border-slate-300 bg-white hover:bg-slate-50 hover:border-sky-400 shadow-sm'
+                  : 'border border-cyber-blue/20 hover:border-cyber-blue/50 bg-cyber-blue/5 hover:bg-cyber-blue/10'
+              }`}
             >
               <AnimatePresence mode="wait" initial={false}>
                 {theme === 'dark' ? (
@@ -140,10 +153,10 @@ export default function Navbar() {
                     {user.displayName[0].toUpperCase()}
                   </div>
                   <div className="text-left">
-                    <div className="text-sm font-medium text-white">{user.displayName}</div>
-                    <div className="text-xs text-cyber-blue font-mono">Lv.{user.level} · {user.xp} XP</div>
+                    <div className={`text-sm font-medium ${theme === 'light' ? 'text-slate-800' : 'text-white'}`}>{user.displayName}</div>
+                    <div className={`text-xs font-mono ${theme === 'light' ? 'text-sky-600' : 'text-cyber-blue'}`}>Lv.{user.level} · {user.xp} XP</div>
                   </div>
-                  <ChevronDown size={14} className="text-slate-400" />
+                  <ChevronDown size={14} className={theme === 'light' ? 'text-slate-500' : 'text-slate-400'} />
                 </button>
 
                 <AnimatePresence>
@@ -206,10 +219,14 @@ export default function Navbar() {
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden text-slate-300 hover:text-white"
+            className={`md:hidden p-2 rounded-lg transition-colors ${
+              theme === 'light'
+                ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                : 'text-slate-300 hover:text-white hover:bg-white/10'
+            }`}
             onClick={() => setMobileOpen(!mobileOpen)}
           >
-            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </div>
@@ -227,9 +244,13 @@ export default function Navbar() {
               {/* AI ROOM — top of mobile menu */}
               <button
                 onClick={handleAIRoom}
-                className="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-cyber-blue font-semibold bg-cyber-blue/10 border border-cyber-blue/20 text-sm"
+                className={`w-full flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all ${
+                  theme === 'light'
+                    ? 'bg-gradient-to-r from-sky-500 to-cyan-500 text-white border-0 shadow-sm'
+                    : 'text-cyber-blue bg-cyber-blue/10 border border-cyber-blue/20'
+                }`}
               >
-                <Zap size={14} className="text-cyber-green" />
+                <Zap size={14} className={theme === 'light' ? 'text-yellow-300' : 'text-cyber-green'} />
                 AI ROOM
               </button>
 

@@ -108,10 +108,10 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="text-2xl md:text-3xl font-display font-light text-slate-300 mb-6 h-10 flex items-center justify-center gap-2"
+          className="text-xl sm:text-2xl md:text-3xl font-display font-light text-slate-300 mb-6 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 min-h-[3rem]"
         >
           <span>Master</span>
-          <span className="text-cyber-cyan font-semibold min-w-64 text-left">
+          <span className="text-cyber-cyan font-semibold text-center sm:text-left sm:min-w-64">
             <AnimatedWord words={words} activeIndex={activeWord} />
           </span>
         </motion.div>

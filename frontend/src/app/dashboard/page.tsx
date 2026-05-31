@@ -48,46 +48,46 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-cyber-black">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 pt-24 pb-12">
+      <div className="max-w-7xl mx-auto px-4 pt-20 sm:pt-24 pb-12">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-display font-black text-white mb-2">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-black text-white mb-2">
             Welcome back, <span className="text-cyber-blue">{user?.displayName}</span> 👋
           </h1>
-          <p className="text-slate-400">Track your progress and continue learning.</p>
+          <p className="text-slate-400 text-sm sm:text-base">Track your progress and continue learning.</p>
         </motion.div>
 
         {/* Level & XP Card */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="cyber-card p-6 mb-6 border-cyber-blue/30"
+          className="cyber-card p-4 sm:p-6 mb-4 sm:mb-6 border-cyber-blue/30"
         >
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className="w-16 h-16 rounded-full bg-cyber-gradient flex items-center justify-center text-2xl font-display font-black text-white shadow-neon-blue">
+          <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 mb-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="relative flex-shrink-0">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-cyber-gradient flex items-center justify-center text-xl sm:text-2xl font-display font-black text-white shadow-neon-blue">
                   {user?.level}
                 </div>
-                <div className="absolute -top-1 -right-1 bg-cyber-green text-white text-xs font-bold px-1.5 py-0.5 rounded-full">LVL</div>
+                <div className="absolute -top-1 -right-1 bg-cyber-green text-white text-[10px] sm:text-xs font-bold px-1 sm:px-1.5 py-0.5 rounded-full">LVL</div>
               </div>
               <div>
-                <div className="text-xl font-display font-bold text-white">{user?.displayName}</div>
-                <div className="text-cyber-blue font-mono text-sm">{user?.xp.toLocaleString()} XP</div>
+                <div className="text-base sm:text-xl font-display font-bold text-white">{user?.displayName}</div>
+                <div className="text-cyber-blue font-mono text-xs sm:text-sm">{user?.xp.toLocaleString()} XP</div>
               </div>
             </div>
-            <div className="flex items-center gap-6 flex-wrap">
+            <div className="flex items-center gap-4 sm:gap-6 flex-wrap">
               <div className="text-center">
-                <div className="flex items-center gap-1 text-orange-400 text-2xl font-bold">
-                  <Flame size={20} /> {user?.streak}
+                <div className="flex items-center gap-1 text-orange-400 text-xl sm:text-2xl font-bold">
+                  <Flame size={18} /> {user?.streak}
                 </div>
-                <div className="text-xs text-slate-400">Day Streak</div>
+                <div className="text-xs text-slate-400">Streak</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-cyber-blue">{stats?.stats.completedChapters}</div>
-                <div className="text-xs text-slate-400">Chapters Done</div>
+                <div className="text-xl sm:text-2xl font-bold text-cyber-blue">{stats?.stats.completedChapters}</div>
+                <div className="text-xs text-slate-400">Chapters</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-400">{stats?.stats.achievements}</div>
-                <div className="text-xs text-slate-400">Achievements</div>
+                <div className="text-xl sm:text-2xl font-bold text-yellow-400">{stats?.stats.achievements}</div>
+                <div className="text-xs text-slate-400">Badges</div>
               </div>
             </div>
           </div>
@@ -109,7 +109,7 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* Quick stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
           {[
             { icon: <BookOpen size={20} />, label: 'Chapters Done', value: stats?.stats.completedChapters || 0, color: 'text-cyber-blue', border: 'border-cyber-blue/30' },
             { icon: <Trophy size={20} />, label: 'Quizzes Passed', value: stats?.stats.passedQuizzes || 0, color: 'text-yellow-400', border: 'border-yellow-400/30' },
@@ -117,25 +117,25 @@ export default function DashboardPage() {
             { icon: <Code size={20} />, label: 'Saved Projects', value: stats?.stats.saves || 0, color: 'text-purple-400', border: 'border-purple-400/30' },
           ].map((stat, i) => (
             <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.05 }}
-              className={`cyber-card p-4 ${stat.border}`}
+              className={`cyber-card p-3 sm:p-4 ${stat.border}`}
             >
-              <div className={`${stat.color} mb-2`}>{stat.icon}</div>
-              <div className={`text-2xl font-display font-bold ${stat.color}`}>{stat.value}</div>
-              <div className="text-xs text-slate-400 mt-0.5">{stat.label}</div>
+              <div className={`${stat.color} mb-1 sm:mb-2`}>{stat.icon}</div>
+              <div className={`text-xl sm:text-2xl font-display font-bold ${stat.color}`}>{stat.value}</div>
+              <div className="text-xs text-slate-400 mt-0.5 leading-tight">{stat.label}</div>
             </motion.div>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
           {/* XP History Chart */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-            className="cyber-card p-6 lg:col-span-2"
+            className="cyber-card p-4 sm:p-6 lg:col-span-2"
           >
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp size={18} className="text-cyber-blue" />
-              <h2 className="font-display font-bold text-white">XP Earned — Last 7 Days</h2>
+            <div className="flex items-center gap-2 mb-3 sm:mb-4">
+              <TrendingUp size={16} className="text-cyber-blue" />
+              <h2 className="font-display font-bold text-white text-sm sm:text-base">XP Earned — Last 7 Days</h2>
             </div>
-            <ResponsiveContainer width="100%" height={180}>
+            <ResponsiveContainer width="100%" height={140}>
               <AreaChart data={stats?.xpHistory || []}>
                 <defs>
                   <linearGradient id="xpGradient" x1="0" y1="0" x2="0" y2="1">
@@ -153,11 +153,11 @@ export default function DashboardPage() {
 
           {/* Course Progress */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
-            className="cyber-card p-6"
+            className="cyber-card p-4 sm:p-6"
           >
-            <div className="flex items-center gap-2 mb-4">
-              <Zap size={18} className="text-cyber-cyan" />
-              <h2 className="font-display font-bold text-white">Course Progress</h2>
+            <div className="flex items-center gap-2 mb-3 sm:mb-4">
+              <Zap size={16} className="text-cyber-cyan" />
+              <h2 className="font-display font-bold text-white text-sm sm:text-base">Course Progress</h2>
             </div>
             <div className="space-y-3">
               {(stats?.progressByCourse || []).slice(0, 5).map(course => (
@@ -182,11 +182,11 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent Activity + Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-            className="cyber-card p-6"
+            className="cyber-card p-4 sm:p-6"
           >
-            <h2 className="font-display font-bold text-white mb-4">Recent Activity</h2>
+            <h2 className="font-display font-bold text-white mb-3 sm:mb-4 text-sm sm:text-base">Recent Activity</h2>
             <div className="space-y-3">
               {(stats?.recentActivity || []).slice(0, 6).map((activity, i) => (
                 <div key={i} className="flex items-center gap-3 py-2 border-b border-cyber-gray/30 last:border-0">
@@ -209,10 +209,10 @@ export default function DashboardPage() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}
-            className="cyber-card p-6"
+            className="cyber-card p-4 sm:p-6"
           >
-            <h2 className="font-display font-bold text-white mb-4">Quick Actions</h2>
-            <div className="grid grid-cols-2 gap-3">
+            <h2 className="font-display font-bold text-white mb-3 sm:mb-4 text-sm sm:text-base">Quick Actions</h2>
+            <div className="grid grid-cols-2 gap-2 sm:gap-3">
               {[
                 { icon: '📚', label: 'Continue Learning', href: '/learn', color: 'border-cyber-blue/30 hover:border-cyber-blue/60 hover:bg-cyber-blue/10' },
                 { icon: '⚡', label: 'Open Playground', href: '/playground', color: 'border-cyber-cyan/30 hover:border-cyber-cyan/60 hover:bg-cyber-cyan/10' },

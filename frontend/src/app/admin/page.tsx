@@ -66,23 +66,23 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-cyber-black">
       <Navbar />
-      <div className="pt-24 pb-20 px-4 max-w-6xl mx-auto">
+      <div className="pt-20 sm:pt-24 pb-20 px-4 max-w-6xl mx-auto">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6 sm:mb-8">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-8 h-8 rounded bg-red-500/20 border border-red-500/50 flex items-center justify-center text-red-400 text-sm">⚙</div>
-            <h1 className="text-3xl font-display font-black text-white">Admin Panel</h1>
+            <h1 className="text-2xl sm:text-3xl font-display font-black text-white">Admin Panel</h1>
           </div>
           <p className="text-slate-400 font-mono text-sm">Platform management and analytics</p>
         </motion.div>
 
         {/* Tabs */}
-        <div className="flex gap-1 border-b border-white/10 mb-8">
+        <div className="flex gap-1 border-b border-white/10 mb-6 sm:mb-8 overflow-x-auto">
           {TABS.map(t => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`px-4 py-2.5 font-mono text-sm transition-all ${
+              className={`px-3 sm:px-4 py-2 sm:py-2.5 font-mono text-xs sm:text-sm transition-all whitespace-nowrap ${
                 tab === t.id
                   ? 'text-white border-b-2 border-cyber-blue -mb-px'
                   : 'text-slate-500 hover:text-slate-300'

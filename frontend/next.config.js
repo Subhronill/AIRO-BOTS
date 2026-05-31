@@ -5,9 +5,17 @@ const nextConfig = {
   images: {
     domains: ['avatars.githubusercontent.com', 'api.dicebear.com'],
   },
-  env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api',
-    NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:4000',
+  // Proxy /api/* to the backend so phone access works:
+  // phone hits http://<laptop-ip>:3000/api/... → Next.js dev server
+  // → forwarded to http://localhost:4000/api/... (backend on same machine)
+  async rewrites() {
+    const backendUrl = process.env.BACKEND_URL || 'http://localhost:4000';
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${backendUrl}/api/:path*`,
+      },
+    ];
   },
 };
 

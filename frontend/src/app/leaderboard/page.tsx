@@ -62,16 +62,16 @@ export default function LeaderboardPage() {
       <Navbar />
       <div className="pt-24 pb-20 px-4 max-w-4xl mx-auto">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-yellow-400/30 bg-yellow-400/10 text-yellow-400 text-sm font-mono mb-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8 sm:mb-12">
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-yellow-400/30 bg-yellow-400/10 text-yellow-400 text-xs sm:text-sm font-mono mb-4 sm:mb-6">
             <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
             Live Rankings
           </div>
-          <h1 className="text-5xl font-display font-black text-white mb-4">
+          <h1 className="text-3xl sm:text-5xl font-display font-black text-white mb-3 sm:mb-4">
             🏆{' '}
             <span className="bg-clip-text text-transparent bg-cyber-gradient">Leaderboard</span>
           </h1>
-          <p className="text-slate-400 text-lg">The top AI & Robotics engineers on the platform.</p>
+          <p className="text-slate-400 text-sm sm:text-lg">The top AI & Robotics engineers on the platform.</p>
         </motion.div>
 
         {/* Top 3 podium */}
@@ -80,23 +80,23 @@ export default function LeaderboardPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="flex items-end justify-center gap-4 mb-12"
+            className="flex items-end justify-center gap-2 sm:gap-4 mb-12"
           >
             {[leaders[1], leaders[0], leaders[2]].map((leader, idx) => {
               const rank = idx === 0 ? 2 : idx === 1 ? 1 : 3;
               const heights = ['h-32', 'h-40', 'h-28'];
               return (
-                <div key={leader.id} className="flex flex-col items-center">
-                  <div className="text-2xl mb-2">{RANK_ICONS[rank]}</div>
-                  <div className={`w-16 h-16 rounded-full border-2 flex items-center justify-center text-xl font-black mb-2 ${
+                <div key={leader.id} className="flex flex-col items-center max-w-[90px] sm:max-w-none">
+                  <div className="text-xl sm:text-2xl mb-2">{RANK_ICONS[rank]}</div>
+                  <div className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 flex items-center justify-center text-base sm:text-xl font-black mb-2 ${
                     rank === 1 ? 'border-yellow-400 bg-yellow-400/20 text-yellow-400' :
                     rank === 2 ? 'border-slate-400 bg-slate-400/20 text-slate-300' :
                     'border-amber-600 bg-amber-600/20 text-amber-500'
                   }`}>
                     {getInitials(leader.name)}
                   </div>
-                  <div className="text-white text-sm font-mono font-bold mb-1 text-center">{leader.name}</div>
-                  <div className="text-xs text-slate-400 font-mono mb-2">{leader.xp.toLocaleString()} XP</div>
+                  <div className="text-white text-xs sm:text-sm font-mono font-bold mb-1 text-center truncate w-full">{leader.name}</div>
+                  <div className="text-xs text-slate-400 font-mono mb-2 truncate w-full text-center">{leader.xp.toLocaleString()} XP</div>
                   <div className={`w-20 ${heights[idx]} rounded-t-lg ${
                     rank === 1 ? 'bg-gradient-to-t from-yellow-600 to-yellow-400' :
                     rank === 2 ? 'bg-gradient-to-t from-slate-700 to-slate-500' :

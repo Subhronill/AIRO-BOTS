@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: airobots-backend
+    env: node
+    region: oregon
+    plan: free
+    rootDir: backend
+
+    # Install deps, generate Prisma client for PostgreSQL, compile TypeScript
+    buildCommand: npm install && npx prisma generate --schema=prisma/schema.postgres.prisma && npm run build
+
+    # Push DB schema on every start, then launch the server
+    startCommand: npx prisma db push --schema=prisma/schema.postgres.prisma && node dist/index.js
+
+    # Health check so Render knows the service is alive
+    healthCheckPath: /health
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      # Render assigns the port — do NOT hardcode 4000
+      - key: PORT
+        value: 10000
+
+      # Set these manually in Render dashboard after first deploy:
+      - key: DATABASE_URL
+        sync: false          # you paste the Supabase connection string
+
+      - key: FRONTEND_URL
+        sync: false          # you paste your Vercel URL (e.g. https://airobots.vercel.app)
+
+      # Auto-generated secure random secrets — Render fills these in
+      - key: JWT_SECRET
+        generateValue: true
+
+      - key: JWT_REFRESH_SECRET
+        generateValue: true

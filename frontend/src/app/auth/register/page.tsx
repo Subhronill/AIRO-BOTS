@@ -39,8 +39,8 @@ export default function RegisterPage() {
           <span className="text-sm">Back to Home</span>
         </Link>
 
-        <div className="cyber-card p-8 rounded-2xl">
-          <div className="text-center mb-8">
+        <div className="cyber-card p-6 sm:p-8 rounded-2xl">
+          <div className="text-center mb-6 sm:mb-8">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-cyber-gradient mb-4 shadow-neon-blue">
               <Cpu size={24} className="text-white" />
             </div>

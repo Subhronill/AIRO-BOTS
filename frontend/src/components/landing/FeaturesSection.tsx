@@ -48,27 +48,27 @@ const FEATURES = [
 
 export function FeaturesSection() {
   return (
-    <section className="py-24 relative">
+    <section className="py-14 sm:py-24 relative">
       <div className="max-w-7xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-16"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-cyber-blue/30 bg-cyber-blue/10 text-cyber-blue text-sm font-mono mb-4">
             Platform Features
           </div>
-          <h2 className="text-4xl md:text-5xl font-display font-black text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-black text-white mb-4">
             Everything You Need to{' '}
             <span className="text-cyber-blue">Become an AI Engineer</span>
           </h2>
-          <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+          <p className="text-base sm:text-xl text-slate-400 max-w-2xl mx-auto">
             Not just theory. Real code, real projects, real skills.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {FEATURES.map((feature, i) => (
             <motion.div
               key={feature.title}
@@ -103,23 +103,23 @@ const TRACKS = [
 
 export function RoadmapPreview() {
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section className="py-14 sm:py-24 relative overflow-hidden">
       <div className="absolute inset-0 grid-bg opacity-50" />
       <div className="relative z-10 max-w-7xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-16"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-400 text-sm font-mono mb-4">
             Learning Roadmap
           </div>
-          <h2 className="text-4xl md:text-5xl font-display font-black text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-black text-white mb-4">
             Zero to{' '}
             <span className="text-purple-400">AI Mastery</span>
           </h2>
-          <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+          <p className="text-base sm:text-xl text-slate-400 max-w-2xl mx-auto">
             8 progressive levels. Each builds on the last. No gaps, no confusion.
           </p>
         </motion.div>
@@ -174,9 +174,9 @@ const STATS = [
 
 export function StatsSection() {
   return (
-    <section className="py-16 border-y border-cyber-gray/50">
+    <section className="py-10 sm:py-16 border-y border-cyber-gray/50">
       <div className="max-w-6xl mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
           {STATS.map((stat, i) => (
             <motion.div
               key={stat.label}
@@ -186,9 +186,9 @@ export function StatsSection() {
               transition={{ delay: i * 0.1 }}
               className="text-center"
             >
-              <div className="text-3xl mb-2">{stat.icon}</div>
-              <div className="text-4xl font-display font-black text-cyber-blue mb-1">{stat.value}</div>
-              <div className="text-sm text-slate-400 font-mono">{stat.label}</div>
+              <div className="text-2xl sm:text-3xl mb-2">{stat.icon}</div>
+              <div className="text-3xl sm:text-4xl font-display font-black text-cyber-blue mb-1">{stat.value}</div>
+              <div className="text-xs sm:text-sm text-slate-400 font-mono">{stat.label}</div>
             </motion.div>
           ))}
         </div>
@@ -223,19 +223,19 @@ const TESTIMONIALS = [
 
 export function TestimonialsSection() {
   return (
-    <section className="py-24">
+    <section className="py-14 sm:py-24">
       <div className="max-w-7xl mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-display font-black text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-black text-white mb-4">
             What Our <span className="text-cyber-green">Students Say</span>
           </h2>
         </motion.div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
           {TESTIMONIALS.map((t, i) => (
             <motion.div
               key={t.name}

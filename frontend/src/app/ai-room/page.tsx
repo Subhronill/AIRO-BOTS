@@ -50,35 +50,35 @@ export default function AIRoomPage() {
     <div className="min-h-screen bg-cyber-black">
       <Navbar />
 
-      <div className="max-w-7xl mx-auto px-4 pt-24 pb-16">
+      <div className="max-w-7xl mx-auto px-4 pt-20 sm:pt-24 pb-16">
 
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25 }}
-          className="mb-12"
+          className="mb-8 sm:mb-12"
         >
           {/* Room badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-cyber-blue/30 bg-cyber-blue/10 text-cyber-blue text-xs font-mono mb-5">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-cyber-blue/30 bg-cyber-blue/10 text-cyber-blue text-xs font-mono mb-4 sm:mb-5">
             <Cpu size={12} />
             AI ROOM
             <span className="w-1.5 h-1.5 rounded-full bg-cyber-green animate-pulse" />
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-display font-black text-white mb-3 leading-tight">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-display font-black text-white mb-3 leading-tight">
             Welcome back,{' '}
             <span className="bg-clip-text text-transparent bg-cyber-gradient">
               {user?.displayName || 'Student'}
             </span>
           </h1>
 
-          <p className="text-lg text-slate-400 max-w-2xl">
+          <p className="text-base sm:text-lg text-slate-400 max-w-2xl">
             Your AI &amp; Robotics learning hub. All courses, quizzes, and material — right here.
           </p>
 
           {/* Quick stats row */}
-          <div className="flex flex-wrap gap-4 mt-6">
+          <div className="flex flex-wrap gap-2 sm:gap-4 mt-4 sm:mt-6">
             <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyber-gray/30 border border-cyber-gray/50">
               <Zap size={14} className="text-cyber-green" />
               <span className="text-sm text-slate-300 font-mono">{user?.xp ?? 0} XP</span>
@@ -104,9 +104,9 @@ export default function AIRoomPage() {
 
         {/* Course grid */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="cyber-card p-6 animate-pulse">
+              <div key={i} className="cyber-card p-4 sm:p-6 animate-pulse">
                 <div className="w-12 h-12 rounded-xl bg-cyber-gray/50 mb-4" />
                 <div className="h-6 bg-cyber-gray/50 rounded mb-2 w-3/4" />
                 <div className="h-4 bg-cyber-gray/30 rounded w-1/2" />
@@ -118,7 +118,7 @@ export default function AIRoomPage() {
             <p className="text-slate-500 text-lg">No courses available yet. Check back soon!</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {courses.map((course, i) => {
               const color = LEVEL_COLORS[course.level] ?? '#0ea5e9';
               return (
@@ -131,11 +131,11 @@ export default function AIRoomPage() {
                 >
                   <Link href={`/learn/${course.slug}`}>
                     <div
-                      className="cyber-card p-6 h-full cursor-pointer transition-all duration-300 hover:shadow-lg"
+                      className="cyber-card p-4 sm:p-6 h-full cursor-pointer transition-all duration-300 hover:shadow-lg"
                       style={{ borderColor: `${color}35` }}
                     >
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="text-4xl">{course.icon}</div>
+                      <div className="flex items-start justify-between mb-3 sm:mb-4">
+                        <div className="text-3xl sm:text-4xl">{course.icon}</div>
                         <div className="flex flex-col items-end gap-1">
                           <span
                             className="text-xs font-mono px-2 py-0.5 rounded-full"
@@ -153,10 +153,10 @@ export default function AIRoomPage() {
                         </div>
                       </div>
 
-                      <h3 className="text-xl font-display font-bold text-white mb-2">
+                      <h3 className="text-base sm:text-xl font-display font-bold text-white mb-2">
                         {course.title}
                       </h3>
-                      <p className="text-slate-400 text-sm mb-5 leading-relaxed line-clamp-2">
+                      <p className="text-slate-400 text-sm mb-3 sm:mb-5 leading-relaxed line-clamp-2">
                         {course.description}
                       </p>
 

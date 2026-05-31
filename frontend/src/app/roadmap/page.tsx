@@ -182,21 +182,21 @@ export default function RoadmapPage() {
   return (
     <div className="min-h-screen bg-cyber-black">
       <Navbar />
-      <div className="pt-24 pb-20 px-4 max-w-5xl mx-auto">
+      <div className="pt-20 sm:pt-24 pb-20 px-4 max-w-5xl mx-auto">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-cyber-blue/30 bg-cyber-blue/10 text-cyber-blue text-sm font-mono mb-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10 sm:mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-cyber-blue/30 bg-cyber-blue/10 text-cyber-blue text-sm font-mono mb-4 sm:mb-6">
             <span className="w-2 h-2 rounded-full bg-cyber-blue animate-pulse" />
             Complete Learning Path
           </div>
-          <h1 className="text-5xl font-display font-black text-white mb-4">
+          <h1 className="text-3xl sm:text-5xl font-display font-black text-white mb-4">
             AI & Robotics{' '}
             <span className="bg-clip-text text-transparent bg-cyber-gradient">Roadmap</span>
           </h1>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto mb-8">
+          <p className="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto mb-6 sm:mb-8">
             The complete structured path from absolute beginner to production AI engineer and robotics specialist.
           </p>
-          <div className="flex justify-center gap-8">
+          <div className="flex justify-center gap-6 sm:gap-8">
             <div className="text-center">
               <div className="text-2xl font-black text-cyber-blue font-mono">{ROADMAP_LEVELS.length}</div>
               <div className="text-xs text-slate-500 font-mono">Levels</div>
@@ -227,7 +227,7 @@ export default function RoadmapPage() {
               >
                 {/* Level row */}
                 <div
-                  className={`relative ml-16 rounded-xl border cursor-pointer transition-all ${level.borderColor} ${
+                  className={`relative ml-12 sm:ml-16 rounded-xl border cursor-pointer transition-all ${level.borderColor} ${
                     expandedLevel === level.level ? 'bg-cyber-dark/80' : 'bg-cyber-dark/40 hover:bg-cyber-dark/60'
                   } shadow-lg ${expandedLevel === level.level ? level.glowColor : ''}`}
                   onClick={() => setExpandedLevel(expandedLevel === level.level ? null : level.level)}
@@ -237,14 +237,14 @@ export default function RoadmapPage() {
                     {level.icon}
                   </div>
 
-                  <div className="p-5 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className={`px-2 py-0.5 rounded text-xs font-mono font-bold bg-gradient-to-r ${level.color} bg-clip-text text-transparent border ${level.borderColor}`}>
-                        LEVEL {level.level}
+                  <div className="p-4 sm:p-5 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                      <div className={`px-2 py-0.5 rounded text-xs font-mono font-bold bg-gradient-to-r ${level.color} bg-clip-text text-transparent border ${level.borderColor} flex-shrink-0`}>
+                        L{level.level}
                       </div>
-                      <div>
-                        <h3 className="text-white font-display font-bold text-lg leading-tight">{level.title}</h3>
-                        <p className="text-slate-500 text-xs font-mono">{level.subtitle}</p>
+                      <div className="min-w-0">
+                        <h3 className="text-white font-display font-bold text-sm sm:text-lg leading-tight truncate">{level.title}</h3>
+                        <p className="text-slate-500 text-xs font-mono truncate">{level.subtitle}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
@@ -327,12 +327,12 @@ export default function RoadmapPage() {
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
-          className="mt-16 text-center p-8 rounded-2xl border border-cyber-blue/30 bg-cyber-dark/50 relative overflow-hidden"
+          className="mt-10 sm:mt-16 text-center p-6 sm:p-8 rounded-2xl border border-cyber-blue/30 bg-cyber-dark/50 relative overflow-hidden"
         >
           <div className="absolute inset-0 grid-bg opacity-20" />
           <div className="relative z-10">
-            <div className="text-4xl mb-4">🚀</div>
-            <h3 className="text-2xl font-display font-bold text-white mb-2">Ready to Start?</h3>
+            <div className="text-3xl sm:text-4xl mb-4">🚀</div>
+            <h3 className="text-xl sm:text-2xl font-display font-bold text-white mb-2">Ready to Start?</h3>
             <p className="text-slate-400 mb-6">Begin your journey from Level 0. No prior experience required.</p>
             <Link href="/learn">
               <motion.button

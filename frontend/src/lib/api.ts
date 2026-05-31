@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api';
+// Use relative '/api' in the browser (proxied by Next.js dev server → backend)
+// so the site works when accessed from a phone on the same Wi-Fi.
+// Falls back to the direct backend URL when NEXT_PUBLIC_API_URL is explicitly set.
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -114,6 +117,7 @@ export interface Course {
   level: number;
   orderIndex: number;
   chapters?: Chapter[];
+  levelTestStatus?: LevelTestStatus[];
   _count?: { chapters: number };
 }
 
@@ -166,6 +170,89 @@ export interface Progress {
   chapterId: string;
   completed: boolean;
   completedAt?: string;
+}
+
+/* ── Coding Challenge ── */
+export interface ChallengeTestCase {
+  id: string;
+  description: string;
+  expectedOutput: string;
+}
+
+export interface CodingChallenge {
+  id: string;
+  chapterId: string;
+  title: string;
+  problemStatement: string;  // Markdown
+  starterCode: string;
+  hints: string[];            // Already parsed by backend
+  testCases: ChallengeTestCase[];
+  language: string;
+  difficulty: string;
+  xpReward: number;
+  alreadyPassed?: boolean;
+}
+
+export interface ChallengeAttemptResult {
+  id: string;
+  passed: boolean;
+  xpAwarded: number;
+  alreadyCompleted: boolean;
+  message: string;
+}
+
+/* ── Level Test ── */
+export interface LevelTestQuestion {
+  id: string;
+  text: string;
+  options: string[];
+  topic?: string;
+  orderIndex: number;
+}
+
+export interface LevelTestBreakdownItem {
+  questionId: string;
+  selected: string | null;
+  correct: string;
+  isCorrect: boolean;
+  explanation: string | null;
+  topic: string | null;
+}
+
+export interface LevelTest {
+  id: string;
+  courseId: string;
+  tier: string;
+  title: string;
+  description: string;
+  timeLimit: number;
+  passingScore: number;
+  xpReward: number;
+  questions: LevelTestQuestion[];
+  passed: boolean;
+  bestScore: number | null;
+  attemptsCount: number;
+}
+
+export interface LevelTestStatus {
+  id: string;
+  tier: string;
+  title: string;
+  passingScore: number;
+  xpReward: number;
+  timeLimit: number;
+  available: boolean;
+  passed: boolean;
+}
+
+export interface LevelTestAttemptResult {
+  attemptId: string;
+  score: number;
+  maxScore: number;
+  passingScore: number;
+  passed: boolean;
+  xpEarned: number;
+  breakdown: LevelTestBreakdownItem[];
 }
 
 export interface DashboardStats {
